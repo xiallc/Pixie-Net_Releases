@@ -1,0 +1,27 @@
+# IDE files
+.idea/
+
+# Data files
+*.csv
+*.log
+*.b00
+*.dt2
+*.dat
+*.txt
+
+# Compiled assets
+*.cgi
+*.o
+gettraces
+progfippi
+runstats
+startdaq
+coincdaq
+findsettings
+acquire
+clockprog
+pollcsr
+avgadc
+coincdaqm
+acquire_lite
+netdaq
