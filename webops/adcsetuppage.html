@@ -38,6 +38,20 @@
 		/* Main column */
 		.main { margin-left: 180px; padding: 20px; }
 
+		/* output column */
+		.right { 
+			margin-left: 10px; 
+			background-color:Azure;
+			/* border-radius:3px;	 */
+			padding: 20px;	
+			margin-top: 10px;
+			white-space: pre-line;
+			width: 220px;
+			font-size: 9px;
+			margin-bottom: 20px;
+		}
+
+
 		.w3-card-2{
 			background-color:white;
 			border-radius:3px;
@@ -67,9 +81,19 @@ $(function(){
 
 	// ------------- button control functions -----------------------
 
+ 	  $("#adjust").click(function(){		// function for  adjust button
+	     alert("This function takes ~30 to complete. Please click OK to continue and wait for next message.");
+		  document.getElementById("output").innerHTML="waiting ...";
+		  $.get("findsettings.cgi", function (data) {	//jQuery get function executes findsettings on Pixie-Net -> sets offset to ~2000 but does not change ini file
+				document.getElementById("output").innerHTML=data;
+				alert("Adjustment done. Refresh traces to see the offsets found. Manually update offset values on this page with the suggested voltages in the response");
+		 })  		// end get		
+	  });		   // end button click adjust 	
+
 	  $("#refresh").click(function(){		// function for  refresh button
+		  //alert("click1");
 		  $.get("cgiprinttraces.cgi", function (data) {		  						//jQuery get function executes gettraces on Pixie-Net -> new ADC.csv
-		  //		alert("Data:  " + data);	    
+		  	//	alert("Data:  " + data);	    					 	
 			 	var g2 = new Dygraph( 												   // and then recreates the plot in graphdiv2
 							    document.getElementById("graphdiv2"),
 							    //"ADC.csv", // path to CSV file
@@ -93,15 +117,14 @@ $(function(){
 		  $("#read").css("background-color", "lightgray");
 		  $("#refresh").css("background-color", "lightgray");
 		  $.get("progfippi.cgi", function (data) {	//jQuery get function executes progfippi on Pixie-Net -> settings file applied
-		  		alert(data);	    
+				document.getElementById("output").innerHTML=data;
 		 })  		// end get
-	  });		   // end button click refresh
+	  });		   // end button click apply 	  	  	 
 
 
 	  $(".readbutton").click(function(){							// function for  read settings button
 
 		  $.get("cgireadsettings.cgi", function (data) {	   //jQuery get function executes cgireadsettings on Pixie-Net -> return data is list of analog settings
-		  		//alert("Data:  " + data);
 			  
 			   var dataarray = data.split(',');			  // "split" data string at commas
 				//alert("Data[0]:  " + dataarray[0]);
@@ -138,11 +161,11 @@ $(function(){
 
 	  $("#apply1").click(function(){		// function for  initialization apply button
 	     $.get("progfippi.cgi", function (data) {	//jQuery get function executes progfippi on Pixie-Net -> settings file applied
-		  		alert(data);	
+				document.getElementById("output").innerHTML=data;
     		   
 		 });  		// end get
 		 $(this).css("background-color", "green");
-	  });		   // end button click refresh
+	  });		   // end button click apply
 
 //	 $("#hide").click(function(){		// hide extra controls  
 //	    $("#first").toggle();
@@ -171,7 +194,7 @@ $(function(){
 						v3:$("#polarity03").val()
 				  },
 			     function (data) {	   
-		  		alert(data);
+				document.getElementById("output").innerHTML=data;
 			 })  // end get
   	 });  // end blur (deselect)
 
@@ -182,7 +205,7 @@ $(function(){
 
 	 $(".fieldo").blur(function(){						   
     	$(this).css("background-color", "white");		   // restore color of control field when done editing
-	//	  	alert("click");
+	
 		 $.get("cgiwritesettings.cgi", 					 //jQuery get function executes cgiwritesettings on Pixie-Net -> webpage values saved to ini file
 		 		 {VOFFSET:"CHANNEL", 
 					v0:$("#offset00").val(),
@@ -191,7 +214,7 @@ $(function(){
 					v3:$("#offset03").val()
 				  },
 			     function (data) {	   
-		  		alert(data);
+				document.getElementById("output").innerHTML=data;
 			 })  // end get
   	 });  // end blur (deselect)
 
@@ -211,7 +234,7 @@ $(function(){
 					v3:$("#again03").val()
 				  },
 			     function (data) {	   
-		  		alert(data);
+				document.getElementById("output").innerHTML=data;
 			 })  // end get
   	 });  // end blur (deselect)
 	 
@@ -231,7 +254,7 @@ $(function(){
 					v3:$("#dgain03").val()
 				  },
 			     function (data) {	   
-		  		alert(data);
+				document.getElementById("output").innerHTML=data;
 			 })  // end get
   	 });  // end blur (deselect)
 
@@ -251,7 +274,7 @@ $(function(){
 					v3:$("#tau03").val()
 				  },
 			     function (data) {	   
-		  		alert(data);
+				document.getElementById("output").innerHTML=data;
 			 })  // end get
   	 });  // end blur (deselect)
 
@@ -281,7 +304,7 @@ $(function(){
 		<div class="fixed_bot">
 			<h2>Help</h2>
 			<i><p>This page displays the ADC waveforms read directly from the module along with parameters relevant to the input signals. </p>
-				<p><b>First click the top 2 buttons to initialize</b> </p>
+				<p><b>First click "Read Settings" to initialize (Program FPGA is optional)</b> </p>
 				<p>Click "Apply" after changing parameters </p>
 				<p>Roughly 200 nanoseconds between samples </p></i>
 		</div>
@@ -306,43 +329,50 @@ $(function(){
 			<input id='read' class='readbutton' type="button" value="Read Settings">
 			<input id='apply' type="button" value="Apply (progfippi)">
 			<input id='refresh' type="button" value="Refresh Traces">
+			<input id='adjust' type="button" value="Adjust Offsets">
 			 <p> </p>
 
 			<table style="width:100%">
-			<tr> <th>Channel</th> <th>Inverted</th> <th>Offset</th>   <th>Analog Gain</th>   <th>Digital Gain</th>  <th>Tau</th>  </tr>
+			<tr> <th>Channel</th> <th>Inverted</th> <th>Offset</th>   <th>Analog Gain</th>   <th>Digital Gain</th>  <th>Tau</th> <th>Show</th>	  </tr>
 			<tr id=row00> <td>00  </td>
 				  <td><label for="polarity00"></label><input class="fieldp" type="text" size="8" id="polarity00" value="0"> </td>
-				  <td><label for="offset00"></label><input class="fieldo" type="text" size="8" id="offset00" value="0.000"> </td>
-				  <td><label for="again00"></label><input class="fielda" type="text" size="8" id="again00" value="0.000">  </td>
+				 <td><label for="offset00"></label><input class="fieldo" type="text" size="8" id="offset00" value="0.000"> </td>
+				 <td><label for="again00"></label><input class="fielda" type="text" size="8" id="again00" value="0.000">  </td>
 				  <td><label for="dgain00"></label><input class="fieldd" type="text" size="8" id="dgain00" value="0.000">  </td>
 				  <td><label for="tau00"></label><input class="fieldt" type="text" size="8" id="tau00" value="0.000">   </td>
-				 </tr>
+				  <td><label for="0"></label><input type="checkbox" id="0" checked="checked" onclick="change(this)"></td> </tr>
 			<tr id=row01> <td>01</td>
-				  <td><label for="polarity01"></label><input class="fieldp" type="text" size="8" id="polarity01" value="0"> </td>
+				 <td><label for="polarity01"></label><input class="fieldp" type="text" size="8" id="polarity01" value="0"> </td>
 				  <td><label for="offset01"></label><input class="fieldo" type="text" size="8" id="offset01" value="0.000">  </td>
-				  <td><label for="again01"></label><input class="fielda" type="text" size="8" id="again01" value="0.000"> </td>
+				 <td><label for="again01"></label><input class="fielda" type="text" size="8" id="again01" value="0.000"> </td>
 				  <td><label for="dgain01"></label><input class="fieldd" type="text" size="8" id="dgain01" value="0.000">  </td>
 				  <td><label for="tau01"></label><input class="fieldt" type="text" size="8" id="tau01" value="0.000"></td>
-				  </tr>
+				  <td><label for="1"></label><input type="checkbox" id="1" checked="checked" onclick="change(this)"> </td> </tr>
 			<tr id=row02> <td>02 </td>
 				  <td><label for="polarity02"></label><input class="fieldp" type="text" size="8" id="polarity02" value="0"> </td>
 				  <td><label for="offset02"></label><input class="fieldo" type="text" size="8" id="offset02" value="0.000">	</td>
-				  <td><label for="again02"></label><input class="fielda" type="text" size="8" id="again02" value="0.000"> </td>
+				 <td><label for="again02"></label><input class="fielda" type="text" size="8" id="again02" value="0.000"> </td>
 				  <td><label for="dgain02"></label><input class="fieldd" type="text" size="8" id="dgain02" value="0.000">  </td>
 				  <td><label for="tau02"></label><input class="fieldt" type="text" size="8" id="tau02" value="0.000"></td>
-				   </tr>
+				  <td><label for="2"></label><input type="checkbox" id="2" checked="checked" onclick="change(this)"> </td> </tr>
 			<tr id=row03> <td>03 </td>
-				  <td><label for="polarity03"></label><input class="fieldp" type="text" size="8" id="polarity03" value="0"> </td>
+				 <td><label for="polarity03"></label><input class="fieldp" type="text" size="8" id="polarity03" value="0"> </td>
 				  <td><label for="offset03"></label><input class="fieldo" type="text" size="8" id="offset03" value="0.000"> </td>
-				  <td><label for="again03"></label><input class="fielda" type="text" size="8" id="again03" value="0.000"> </td>
+				 <td><label for="again03"></label><input class="fielda" type="text" size="8" id="again03" value="0.000"> </td>
 				  <td><label for="dgain03"></label><input class="fieldd" type="text" size="8" id="dgain03" value="0.000">  </td>
 				  <td><label for="tau03"></label><input class="fieldt" type="text" size="8" id="tau03" value="0.000"></td>
-				   </tr>
+				  <td><label for="3"></label><input type="checkbox" id="3" checked="checked" onclick="change(this)"> </td> </tr>
 			 </table>
 		</div>
 	</div>
 
+		<div class="right">
+			<h2>Response</h2>	
+			<div id="output">
+				 ready
 
+			</div>
+		</div>
 
 <script type="text/javascript">
 

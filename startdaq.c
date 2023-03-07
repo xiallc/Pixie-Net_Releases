@@ -74,7 +74,8 @@ int main(void) {
   double elm, q;
   double cfdlev;
   time_t starttime, currenttime;
-  unsigned int startTS, m, c0, c1, c2, c3, w0, w1, tmpI, revsn;
+  unsigned int startTS, w0, w1, tmpI, revsn;
+  //double m, c0, c1, c2, c3;
   unsigned int evstats, R1, hit, timeL, timeH, psa0, psa1, cfd0;
   unsigned int psa_base, psa_Q0, psa_Q1, psa_ampl, psa_R;
   unsigned int cfdout, cfdlow, cfdhigh, cfdticks, cfdfrac, ts_max;
@@ -194,6 +195,7 @@ int main(void) {
    loopcount =  0;
    eventcount = 0;
    starttime = time(NULL);                         // capture OS start time
+   currenttime = starttime;
    if( (RunType==0x500) || (RunType==0x501)  || (RunType==0x502) || (RunType==0x400) )  {    // list mode runtypes    
       if(SyncT) mapped[ARTC_CLR] = 1;              // write to reset time counter
       mapped[AOUTBLOCK] = 2;
@@ -485,16 +487,19 @@ int main(void) {
             // 1) Run Statistics 
             mapped[AOUTBLOCK] = OB_RSREG;
 
+            /*
             // for debug purposes, print to std out so we see what's going on
             k = 3;    // no loop for now
             {
-              m  = mapped[ARS0_MOD+k];
-              c0 = mapped[ARS0_CH0+k];
-              c1 = mapped[ARS0_CH1+k];
-              c2 = mapped[ARS0_CH2+k];
-              c3 = mapped[ARS0_CH3+k];
-              printf("%s,%u,%s,%u,%u,%u,%u\n ","RunTime",m,"COUNTTIME",c0,c1,c2,c3);        
+              m  = (mapped[ARS0_MOD+k] + (mapped[ARS0_MOD+k+1]*TWOTO32))/1E9;
+              c0 = (mapped[ARS0_CH0+k] + (mapped[ARS0_CH0+k+1]*TWOTO32))/1E9;
+              c1 = (mapped[ARS0_CH1+k] + (mapped[ARS0_CH1+k+1]*TWOTO32))/1E9;
+              c2 = (mapped[ARS0_CH2+k] + (mapped[ARS0_CH2+k+1]*TWOTO32))/1E9;
+              c3 = (mapped[ARS0_CH3+k] + (mapped[ARS0_CH3+k+1]*TWOTO32))/1E9;
+              printf(" %s %9.3f, %s %9.3f,%9.3f,%9.3f,%9.3f\n","RUN_TIME",m,"COUNT_TIME",c0,c1,c2,c3);        
             }
+            */
+             printf(" Time %u s, Events total %u\n",(unsigned int)(currenttime - starttime),eventcount);
 
             // print (small) set of RS to file, visible to web
             read_print_runstats(1, 0, mapped);
@@ -556,7 +561,8 @@ int main(void) {
    // clear RunEnable bit to stop run
    mapped[ACSRIN] = 0;               
    // todo: there may be events left in the buffers. need to stop, then keep reading until nothing left
-                      
+   printf(" Run ended, events total %u.  Finishing up ...\n",eventcount); 
+                  
    // final save MCA and RS
    filmca = fopen("MCA.csv","w");
    fprintf(filmca,"bin,MCAch0,MCAch1,MCAch2,MCAch3\n");
@@ -623,6 +629,7 @@ int main(void) {
 
 
  if( (RunType==0x500) || (RunType==0x501)  || (RunType==0x502) || (RunType==0x400) )  { 
+   if(eventcount>100000) printf(" Closing files, this may take a long time for high rates\n");
    fclose(fil);
  }
  flock( fd, LOCK_UN );

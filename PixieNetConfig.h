@@ -198,7 +198,7 @@ typedef struct PixieNetFippiConfig {
       CCSRA_INVERT_05      1          if 1, ADC data is inverted before processing (for falling edge pulses)
       CCSRA_VETO_REJLO_06  0          if 1, reject events when global Veto is low
       CCSRA_U_07           0
-      CCSRA_U_08           0
+      CCSRA_NO_OVERLAP_08  1          if 1, do not capture overlapping waveforms (ignore closely following pulses) 
       CCSRA_NEGE_09        0          if 1, allow negative numbers as result of energy computation, NYI
       CCSRA_U_10           0
       CCSRA_U_11           0

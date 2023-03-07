@@ -703,9 +703,17 @@ int init_PixieNetFippiConfig_from_file( const char * const filename,
   if(ret==0) 
     for( int i = 0; i < NCHANNELS; ++i )
       config->CHANNEL_CSRA[i] = SetOrClrBit(6, config->CHANNEL_CSRA[i], bits[i]);  
+
+  ret = parse_multiple_bool_val( label_to_values, "CCSRA_NO_OVERLAP_08", bits, ignore_missing ) ;
+  if( (ignore_missing==0 && ret==1) || (ret<0) )    return -30;
+  if(ret==0) 
+    for( int i = 0; i < NCHANNELS; ++i )
+      config->CHANNEL_CSRA[i] = SetOrClrBit(8, config->CHANNEL_CSRA[i], bits[i]);  
+      
                               
   ret = parse_multiple_bool_val( label_to_values, "CCSRA_NEGE_09", bits, ignore_missing) ;
   if( (ignore_missing==0 && ret==1) || (ret<0) )    return -31;
+  if(ret==0) 
   for( int i = 0; i < NCHANNELS; ++i )
     config->CHANNEL_CSRA[i] = SetOrClrBit(9, config->CHANNEL_CSRA[i], bits[i]);  
                             

@@ -34,7 +34,7 @@
  *----------------------------------------------------------------------*/
 
 // system constants
-#define PS_CODE_VERSION 0x0224
+#define PS_CODE_VERSION 0x0225
 #define PN_BOARD_VERSION_12_250_A 0xA990    
 #define PN_BOARD_VERSION_12_250_B 0xA991  
 #define PN_BOARD_VERSION_12_250_B_PTP 0xA981  
@@ -52,7 +52,7 @@
 #define NTRACE_SAMPLES 8192
 #define NAVG_TRACE_SAMPLES 4096
 #define TWOTO32   4294967296
-#define ICRSCALE 15        // factor between current iCR read and ICR in cps
+#define ICRSCALE 15        // factor between current ICR read and ICR in cps
 
 // Limits for settings
 #define MIN_CW 5             // Coinc Window limits

@@ -1,4 +1,4 @@
-/*----------------------------------------------------------------------
+                    /*----------------------------------------------------------------------
  * Copyright (c) 2017 XIA LLC
  * All rights reserved.
  *
@@ -76,6 +76,7 @@ using namespace std;
 #define PixieNetHit_RECORD_HIT_PSA 1   // optionally ignore PSA results
 #define MAX_ACQ_TL 512                 // set limit for waveforms length (abs max: 4092)
 #define SUMMCA 1                       // 
+#define MAX_QUEUED 100000
 
 
 /* ********************************************************************************
@@ -148,10 +149,10 @@ typedef struct PixieNetHit402 {
  
 
 
-/** A global variable that gets set to true if the ctrl-c interupt is detected.
+/** A global variable that gets set to N>1 if the ctrl-c interupt is detected.
     If this happens, the data collection loop is terminated, and everything else
     exits as normal.                                      */
-boost::atomic<bool> g_datataking_stop_requested;
+boost::atomic<size_t> g_datataking_stop_requested;
 
 
 /** Writes listmode data in the queue to disk 
@@ -198,7 +199,7 @@ void histogram_lm_data( uint32_t histogram[NCHANNELS+1][MAX_MCA_BINS],
                         unsigned int BINFACTOR[NCHANNELS] );
 
 
-/** Sets g_datataking_stop_requested to true, which stops data taking so program
+/** Sets g_datataking_stop_requested to N>0, which stops data taking so program
     can exit.   */
 void handle_interupt( int s );
 
@@ -285,9 +286,11 @@ int main( int argc, char **argv )
   int TL;
   unsigned int BLbad[NCHANNELS];
   unsigned int BLcut[NCHANNELS], BLavg[NCHANNELS];
+  long queued;
+  int pause_queue = 0;
 
   //Set the handler for if the user hits ctrl-c
-  g_datataking_stop_requested = false;
+  g_datataking_stop_requested = 0;
   
   struct sigaction sigIntHandler;
   sigIntHandler.sa_handler = handle_interupt;
@@ -593,22 +596,47 @@ int main( int argc, char **argv )
     // -----------poll for events -----------
     // if data ready. read out, compute E, increment MCA *********
     unsigned int nhits;
-    if( fippiconfig.RUN_TYPE == 0x402)
-    {
-        nhits = collect_PixieNet_lm_data402( mapped, hits, &runstats, &fippiconfig );
-        for( size_t i = 0; i < nhits; ++i )    // nhits = 0 to 4 
-          if( !hit_queue.push( hits[i] ) )
-             cerr << "Failed to push onto queue" << endl;
+    
+    // ensure we don't have too much of a backlog
+    size_t ntotalwrittennow = num_wrote;
+    queued = ((long)runstats.eventcount - (long)ntotalwrittennow);
 
-    } else {
-        nhits = collect_PixieNet_lm_data400( mapped, hits, &runstats, &fippiconfig );
-        for( size_t i = 0; i < nhits; ++i )    // nhits = 0 to 4 
-          if( !hit_queue.push( hits[i] ) )
-            cerr << "Failed to push onto queue" << endl;
+    if (pause_queue==0 && queued > MAX_QUEUED )
+    {
+         cout << "queue paused " << queued << endl;
+         pause_queue = 1;
     }
- 
-    if( nhits )
-      notifier.notify_one();
+    if (pause_queue==1 && queued < MAX_QUEUED*0.8 )
+    {
+         cout << "queue un-paused " << queued << endl;
+         pause_queue = 0;
+    }
+
+
+
+
+    if(pause_queue==0)
+    {
+
+
+       if( fippiconfig.RUN_TYPE == 0x402)
+       {
+           nhits = collect_PixieNet_lm_data402( mapped, hits, &runstats, &fippiconfig );
+           for( size_t i = 0; i < nhits; ++i )    // nhits = 0 to 4 
+             if( !hit_queue.push( hits[i] ) )
+                cerr << "Failed to push onto queue" << endl;
+   
+       } else {
+           nhits = collect_PixieNet_lm_data400( mapped, hits, &runstats, &fippiconfig );
+           for( size_t i = 0; i < nhits; ++i )    // nhits = 0 to 4 
+             if( !hit_queue.push( hits[i] ) )
+               cerr << "Failed to push onto queue" << endl;
+       }
+    
+       if( nhits )
+         notifier.notify_one();
+
+     } 
 
      
     // ----------- Periodically save MCA and RS -----------
@@ -637,6 +665,13 @@ int main( int argc, char **argv )
          }
        }
        fclose(filmca); 
+
+       // 3) update console
+       const boost::posix_time::ptime currenttime1 = boost::posix_time::second_clock::local_time();
+       const boost::posix_time::time_duration dur1 = currenttime1 - starttime;
+       //cout << "Time: " << dur1 << " Events total " << runstats.eventcount << " written " << ntotalwrittennow << " queued " << ((long)runstats.eventcount - (long)ntotalwrittennow) << endl;
+       cout << "Time: " << dur1 << " Events total " << runstats.eventcount << " queued " << queued << endl;
+
     }
 
     // ----------- check if we've run long enough -------------------
@@ -645,7 +680,9 @@ int main( int argc, char **argv )
 
     if( dur >= runtimelimit )
       break;
-  } while ( !g_datataking_stop_requested );
+    if(g_datataking_stop_requested >1)
+      exit(-1);                         // multiple ctrl-c: exit altogether
+  } while ( g_datataking_stop_requested==0 );
 
   
   // ********************** Run Stop **********************
@@ -666,9 +703,15 @@ int main( int argc, char **argv )
       {  
         nhitsnow = collect_PixieNet_lm_data402( mapped, hits, &runstats, &fippiconfig );
         for( size_t i = 0; i < nhitsnow; ++i )
+        {
           hit_queue.push( hits[i] );
-        
+          if(g_datataking_stop_requested >1)
+            exit(-1);                         // multiple ctrl-c: exit altogether
+        }
+
         notifier.notify_one();
+
+
       
       }while( nhitsnow );
       
@@ -681,9 +724,15 @@ int main( int argc, char **argv )
       {  
         nhitsnow = collect_PixieNet_lm_data400( mapped, hits, &runstats, &fippiconfig );
         for( size_t i = 0; i < nhitsnow; ++i )
+        {
           hit_queue.push( hits[i] );
+          if(g_datataking_stop_requested >1)
+             exit(-1);                         // multiple ctrl-c: exit altogether
+        }
          
         notifier.notify_one();
+         
+
       
       }while( nhitsnow );
       
@@ -790,8 +839,17 @@ int main( int argc, char **argv )
 
 void handle_interupt( int s )
 {
-  printf( "Caught signal %d\nWill stop taking data.", s );
-  g_datataking_stop_requested = true;
+  if(g_datataking_stop_requested==0)
+  {
+      printf( "Caught signal %d. Will stop taking data.\n", s );    // first time around, try safe exit
+      g_datataking_stop_requested = 1;
+  } 
+  else
+  {
+      printf( "Caught signal %d again. Will exit DAQ.\n", s );   // 2nd time, give up 
+      g_datataking_stop_requested ++;
+  }
+
 }//void handle_interupt( int s );
 
 

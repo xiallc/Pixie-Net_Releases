@@ -26,7 +26,7 @@
 		.row { display: flex; flex-wrap: wrap; }
 
 		/* Sidebar/left column */
-		.side { height: 100%; width: 180px; position: fixed; background-color: white; padding: 20px; }
+		.side { height: 200%; width: 180px; position: fixed;  background-color: white; padding: 20px; }
 		.side a { float: left; display: block; color: #002b80; text-align: left; padding: 10px 10px; text-decoration: none; }
 		.side a:hover { background-color: #ddd; color: #1e73be; }
 
@@ -37,6 +37,20 @@
 
 		/* Main column */
 		.main { margin-left: 180px; padding: 20px; }
+
+		/* output column */
+		.right { 
+			margin-left: 10px; 
+			background-color:Azure;
+			/* border-radius:3px;	 */
+			padding: 20px;	
+			margin-top: 20px;
+			white-space: pre-line;
+			width: 220px;
+			font-size: 9px;
+			margin-bottom: 20px;
+		}
+
 
 		.w3-card-2{
 			background-color:white;
@@ -83,15 +97,16 @@ $(document).ready(function(){
 		  $("#read").css("background-color", "lightgray");
 		  $("#start").css("background-color", "lightgray");
 		  $.get("progfippi.cgi", function (data) {	//jQuery get function executes progfippi on Pixie-Net -> settings file applied
-		  		alert(data);	    
+		  		//alert(data);	  
+  			   document.getElementById("output").innerHTML=data;
 		 })  		// end get
 	  });		   // end button click refresh
 
 
 	  $("#read").click(function(){							// function for  read settings button
-			// alert("click")
+
 		  $.get("cgireadsettings.cgi", function (data) {	   //jQuery get function executes cgireadsettings on Pixie-Net -> return data is list of analog settings
-		  	//	alert("Data:  " + data);
+		  		//alert("Data:  " + data);
 			  
 			   var dataarray = data.split(',');			  // "split" data string at commas
 				//alert("Data[0]:  " + dataarray[0]);
@@ -106,7 +121,9 @@ $(document).ready(function(){
 	  			move()
 	//  		alert("click");
 		  $.get("startdaq.cgi", function (data) {	//jQuery get function executes startdaq on Pixie-Net -> run in progress
-		  		alert(data);  	   
+		  		//alert(data);  
+	   		document.getElementById("output").innerHTML=data; //"hello hello hello"; //data;
+
 		 })  		// end get
 	  });		   // end button click refresh
 
@@ -127,7 +144,8 @@ $(document).ready(function(){
 				 		v0:$("#runtime").val()
 				  },
 			     function (data) {	   
-		  		alert(data);
+		  		//alert(data);
+				document.getElementById("output").innerHTML=data;
 			 })  // end get
   	 });  // end blur (deselect)
 
@@ -144,7 +162,8 @@ $(document).ready(function(){
 						v1:$("#runtype").val()
 				  },
 			     function (data) {	   
-		  		alert(data);
+		  		//alert(data);
+				document.getElementById("output").innerHTML=data;
 			 })  // end get
   	 });  // end blur (deselect)
 
@@ -192,6 +211,8 @@ $(document).ready(function(){
 			<input id='read' type="button" value="Read Settings">
 			<input id='apply' type="button" value="Apply (progfippi)">
 			<input id='start' type="button" value="Start DAQ">
+			<input id='udpena' type="button" value="Enable UDP">
+			<input id='udpdis' type="button" value="Disable UDP">
 			<p> </p>
 
 			<div id="myProgress">
@@ -222,14 +243,10 @@ $(document).ready(function(){
 		</div>
 			the data acquisition, open/download
 		   <ul>
-   			 <li> <a href="LMdata.txt">  List mode data with waveforms </a>(from run type 0x500, text) </li>
-				 <li> <a href="LMdata.dat">  List mode data without waveforms </a>(from run type 0x501, csv) </li>
-				 <li> <a href="LMdata.dt2">  List mode data with PSA </a>(from run type 0x502, csv)</li>
-				 <li> <a href="LMdata.dt3">  List mode coincidence data </a>(from run type 0x503, csv)</li>
-				 <li> <a href="LMdata.b00">  Binary list mode data </a>(from run types 0x400, 0x402)</li>
-			    <li> <a href="MCA.csv"> MCA spectra </a> as csv file</li>
-			    <li> <a href="RS.csv"> Run statistics </a> as csv file (full)</li>
-		   	 <li> <a href="psa2D.csv"> PSA histogram </a> as csv file</li>
+				<li> <a href="LMdata0.bin"> 0x100 </a> Binary list mode data (from run type 0x100 [Pixie-16])</li>
+				<li> <a href="LMdata0.b00"> 0x400/402</a> Binary list mode data (from run types 0x400, 0x402)</li>
+			   <li> <a href="MCA.csv"> MCA spectra </a> as csv file</li>
+			   <li> <a href="RS.csv"> Run statistics </a> as csv file (full)</li>
 			</ul>
 
 		   <p>View most recent data<b> in plots and tables</b> </p>
@@ -239,6 +256,15 @@ $(document).ready(function(){
 			</ul>
 		</div>
 	</div>
+
+	<div class="right">
+		<h2>Response</h2>	
+		<div id="output">
+			 ready
+
+		</div>
+	</div>
+
 
  </div>
 
