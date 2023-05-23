@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="plotly-latest.min.js"></script>
-    <title>Pixie-Net PSA Surface</title>
+    <title>Pixie-Net PSA Histogram</title>
 
     <style type="text/css">
         body { background-color:#d0d0d0; font-family:sans-serif; }
@@ -67,10 +67,9 @@
 <body>
 
 <div class="header">
-    <h1>Pixie-Net PSA Surface</h1>
-	 	[ from file in /var/www ]
+    <h1>Pixie-Net PSA Histogram</h1>
+	 	[ from file in /var/www/webops ]
 </div>
-
 <div class="row">
     <div class="side">
         <img src="xialogo.jpg" width="140" height=auto alt="XIA Logo">
@@ -79,7 +78,7 @@
 		<a href="cgitraces.cgi"> Current ADC traces </a>
 		<a href="cgistats.cgi"> Current run statistics </a>
 		<a href="mcapage.html">Most recent <br> MCA spectra</a>
-		<a href="/webops/webopsindex.html"> Web interface </a>
+		<a href="/webops/webopsindex.html"> Web interface </a>     
 
         <div class="fixed_bot">
             <h2>Help</h2>
@@ -91,30 +90,30 @@
 
     <div class="main">
         <div class="w3-card-2">
-            <!-- Plotly chart will be drawn inside these DIVs -->
-            <div id="Ch0" style="width:520px; height:450px;"></div>
+            <!-- Plotly chart will be drawn inside these DIV -->
+            <div id="Ch0" style="width:480px; height:400px;"></div>
         </div>
         <div class="w3-card-2">
-            <div id="Ch1" style="width:520px; height:450px;"></div>
+            <div id="Ch1" style="width:480px; height:400px;"></div>
         </div>
         <div class="w3-card-2">
-            <div id="Ch2" style="width:520px; height:450px;"></div>
+            <div id="Ch2" style="width:480px; height:400px;"></div>
         </div>
         <div class="w3-card-2">
-            <div id="Ch3" style="width:520px; height:450px;"></div>
+            <div id="Ch3" style="width:480px; height:400px;"></div>
         </div>
     </div>
 </div>
-
 <script>
 
 // define global constants
 var Nbins=100;
    
 Plotly.d3.csv('psa2D.csv', function(err, rows){
-function unpack(rows, key) {
-  return rows.map(function(row) { return row[key]; });
-}
+
+	function unpack(rows, key) {
+	  return rows.map(function(row) { return row[key]; });
+	}
 
 	// define the color scheme
 		var psacolor = [
@@ -142,7 +141,7 @@ function unpack(rows, key) {
             ['0.980', 'rgb(255,  0,255)'],
             ['1.000', 'rgb(  0,  0,  0)'],
         ];
-  
+	  
 	var z_data0=[ ];
 	for(i=0;i< Nbins;i++)
 	{
@@ -163,45 +162,35 @@ function unpack(rows, key) {
 	{
 	  z_data3.push(unpack(rows,i));
 	}
+	var data0 = [{
+	           z: z_data0,
+				  colorscale: psacolor,
+	           type: 'heatmap'
+	        }];	  
+	var data1 = [{
+	           z: z_data1,
+				  colorscale: psacolor,
+	           type: 'heatmap'
+	        }];	  		  	
+	var data2 = [{
+	           z: z_data2,
+				  colorscale: psacolor,
+	           type: 'heatmap'
+	        }];	  
+	var data3 = [{
+	           z: z_data3,
+				  colorscale: psacolor,
+	           type: 'heatmap'
+	        }];	  		  
 
-var data0 = [{
-           z: z_data0,
-	  		  colorscale: psacolor,
-           type: 'surface'
-        }];  
-		  
 
-var data1 = [{
-           z: z_data1,
-	  		  colorscale: psacolor,
-           type: 'surface'
-        }];  
+   var layout = {  
+   		autosize: true,	 
+			margin: {t: 20},
+			xaxis: { title: 'Energy' },
+			yaxis: { title: 'PSA value' }
+  			};
 
-var data2 = [{
-           z: z_data2,
-	  		  colorscale: psacolor,
-           type: 'surface'
-        }];
-
-var data3 = [{
-           z: z_data3,
-	  		  colorscale: psacolor,
-           type: 'surface'
-        }];
-
-	var layout = {
-	  autosize: true,
-	  width: 500,
-	  height: 450,
-	  // camera: { eye: {x:0, y:0, z:0 }, up: {x:0, y:1, z:0} },
-	  margin: {
-	    l: 65,
-	    r: 50,
-	    b: 35,
-	    t: 30,
-	  }
-	};
-	
 	Plotly.newPlot('Ch0', data0, layout);
 	Plotly.newPlot('Ch1', data1, layout);
 	Plotly.newPlot('Ch2', data2, layout);
@@ -213,6 +202,4 @@ var data3 = [{
 
 </body>
 </html>
-
-
 

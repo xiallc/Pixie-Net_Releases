@@ -56,6 +56,7 @@ int main(void) {
   int k;
   FILE * fil;
   unsigned int adc0[NTRACE_SAMPLES], adc1[NTRACE_SAMPLES], adc2[NTRACE_SAMPLES], adc3[NTRACE_SAMPLES];
+  unsigned int OBsave, csr;
 
 
   // *************** PS/PL IO initialization *********************
@@ -77,6 +78,17 @@ int main(void) {
 
 
    // **************** XIA code begins **********************
+
+   // check if run is in progress
+   OBsave = mapped[AOUTBLOCK];
+   mapped[AOUTBLOCK] = OB_EVREG;
+   csr = mapped[ACSROUT];
+   if(csr & 0x1)          // test runenable bit
+   {
+      printf("This fuction can not be executed while a run is in progress. CSRout = 0x%x.",csr);
+      mapped[AOUTBLOCK] = OBsave;
+      return(-1);
+   }
 
    // read 8K samples from ADC register 
    // at this point, no guarantee that sampling is truly periodic

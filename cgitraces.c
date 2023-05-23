@@ -105,9 +105,11 @@ int main(void) {
    {
       fgets(line, LINESZ, fil);     // read from template, first part
       if(k==6)
-         printf("<title>Pixie-Net ADC (current) </title>\n");            // "print" to webserver on stdout  
+         printf("<title>Pixie-Net ADC Traces</title>\n");            // "print" to webserver on stdout  
       else if(k==55)
-         printf("<h1>Pixie-Net ADC Traces (current)</h1>\n");            // "print" to webserver on stdout  
+         printf("<h1>Pixie-Net ADC Traces </h1>\n");            // "print" to webserver on stdout  
+      else if(k==56)
+         printf("[ current read from FPGA ]\n");            // "print" to webserver on stdout  
       else if(k==70)
          printf("<i><p>This page displays the ADC waveforms just read from the Pixie-Net</p>\n");            // "print" to webserver on stdout  
       else if(k==74)  

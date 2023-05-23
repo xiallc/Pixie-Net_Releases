@@ -734,6 +734,8 @@ int main(void) {
    printf("Revision %04X, Serial Number %d \n",(k>>16) & 0xFFFF, k & 0xFFFF);
    if(k==0) printf("WARNING: HW may be incompatible with this SW/FW \n");
 
+
+ //  printf("Executed in %s \n",argv[0];
  
  // clean up  
  flock( fd, LOCK_UN );

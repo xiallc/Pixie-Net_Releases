@@ -198,7 +198,7 @@ int main(void) {
    currenttime = starttime;
    if( (RunType==0x500) || (RunType==0x501)  || (RunType==0x502) || (RunType==0x400) )  {    // list mode runtypes    
       if(SyncT) mapped[ARTC_CLR] = 1;              // write to reset time counter
-      mapped[AOUTBLOCK] = 2;
+      mapped[AOUTBLOCK] = OB_RSREG;
       startTS = mapped[AREALTIME];
       if(RunType==0x500)   {                       // generic runtype is one value per line
          fil = fopen("LMdata.txt","w");
@@ -411,7 +411,7 @@ int main(void) {
                   if(RunType==0x500)   {
                         // saving 8 headers +  waveforms, one entry per line
                        fprintf(fil,"%u\n%d\n0x%X\n%u\n%u\n%u\n%u\n%u\n",eventcount,ch,hit,timeH,timeL,energy,psa_R,cfdout);
-                       mapped[AOUTBLOCK] = 3;
+                       mapped[AOUTBLOCK] = OB_WFREG;
                        wf[0] = mapped[AWF0+ch];  // dummy read?
                        for( k=0; k < (TL[ch]/4); k++)
                        //for( k=0; k < 10; k++)
@@ -455,7 +455,7 @@ int main(void) {
                           fwrite( buffer2, 1, CHAN_HEAD_LENGTH_400*2, fil );
                           NumPrevTraceBlks = TraceBlks;
    
-                          mapped[AOUTBLOCK] = 3;
+                          mapped[AOUTBLOCK] = OB_WFREG;
                         //  w0 = mapped[AWF0+ch];  // dummy read?
                           for( k=0; k < (TL[ch]/4); k++)
                           {

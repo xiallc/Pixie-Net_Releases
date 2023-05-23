@@ -196,7 +196,7 @@ int main(void) {
    eventcount = 0;
    starttime = time(NULL);                         // capture OS start time
    if(SyncT) mapped[ARTC_CLR] = 1;              // write to reset time counter
-   mapped[AOUTBLOCK] = 2;
+   mapped[AOUTBLOCK] = OB_RSREG;
    startTS = mapped[AREALTIME];   
  
    if( (RunType==0x503)  )  {      // grouped list mode run (equiv 0x402)    

@@ -54,8 +54,8 @@
 <body>
 <div class="header">
 	<h1>Pixie-Net MCA Spectrum </h1>
+		[ from file in /var/www ]
 </div>
-
 <div class="row">
 	<div class="side">
 		<img src="xialogo.jpg" width="140" height=auto alt="XIA Logo">
@@ -79,6 +79,7 @@
 		 	<div id="graphdiv2"  style="width:500px; height:300px;"></div>
 			<input id='ylog' type="button" value="y log scale" onclick="setLogScale('y', true)">
 			<input id='ylinear' type="button" value="y linear scale" onclick="setLogScale('y', false)">
+			<input type="checkbox" id="autoupdate" onclick="toggle()"> Update periodically
 		</div>
 	</div>
 </div>
@@ -113,6 +114,19 @@
       }
 
       setLogScale('y', false);
+ </script>
+
+ <script >
+
+		setInterval(function() {  
+		
+ 	    var decider = document.getElementById('autoupdate');
+    		if(decider.checked){
+	   		g2.updateOptions( { 'file': "MCA.csv" } );
+			}
+		//	alert("update?");
+		 }, 1000);
+
 
 </script>
 

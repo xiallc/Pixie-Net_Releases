@@ -187,9 +187,11 @@ int main(void) {
    {
       fgets(line, LINESZ, fil);     // read from template, first part
      if(k==6)
-         printf("<title>Pixie-Net Triggered ADC Traces (current) </title>\n");            // "print" to webserver on stdout  
+         printf("<title>Pixie-Net Triggered ADC Traces </title>\n");            // "print" to webserver on stdout  
       else if(k==57)
-         printf("<h1>Pixie-Net Triggered ADC Traces (current)</h1>\n");            // "print" to webserver on stdout  
+         printf("<h1>Pixie-Net Triggered ADC Traces </h1>\n");            // "print" to webserver on stdout  
+      else if(k==58)
+         printf("[ current read from FPGA ] \n"); 
       else if(k==72)
          printf("<i><p>This page displays the triggered, averaged ADC waveforms just read from the Pixie-Net</p>\n");            // "print" to webserver on stdout  
       else if(k==76)  

@@ -83,9 +83,11 @@ int main(void) {
   {
       fgets(line, LINESZ, fil);     // read from template, first part
       if(k==6)
-         printf("<title>Pixie-Net Run Statistics (current)</title>\n");
+         printf("<title>Pixie-Net Run Statistics </title>\n");
       else if(k==60)      
-         printf("<p> <h1> Pixie-Net Run Statistics (current) </h1>\n");
+         printf("<h1> Pixie-Net Run Statistics </h1>\n");
+      else if(k==61)      
+         printf("[ current read from FPGA ]\n");
       else if(k==75)  
          printf("<i><p>This page displays the run statistics just read from the Pixie-Net</p>\n");            // "print" to webserver on stdout  
       else if(k==76)  
