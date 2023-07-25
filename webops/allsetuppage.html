@@ -51,7 +51,6 @@
 			margin-bottom: 20px;
 		}
 
-
 		.w3-card-2{
 			background-color:white;
 			border-radius:3px;
@@ -79,36 +78,34 @@
 <script>
 
 function release(x) {
-		   var table = document.getElementById("initable");	
+	var table = document.getElementById("initable");	
 
-			for (var i = 1, row; row = table.rows[i]; i++) {
-		   //iterate through rows
-			   //rows would be accessed using the "row" variable assigned in the for loop
+	for (var i = 1, row; row = table.rows[i]; i++) {
+		//iterate through rows
+		//rows would be accessed using the "row" variable assigned in the for loop
+	
+		 col0 = row.cells[0]
+		 col1 = row.cells[1]
+	
+		 var content = $("#par"+x).val();
+		// alert (content);
+		 
+		 var valww   = content.replace(/\s/g,"w");
+		 var pname =  col0.innerText;
 
-			 col0 = row.cells[0]
-			 col1 = row.cells[1]
-
-			 var content = $("#par"+x).val();
-		//	 alert (content);
-			 
-			 var valww   = content.replace(/\s/g,"w");
-			 var pname =  col0.innerText;
-
-			 if(i==x+1)		 	// get can not loop over all rows, multiple calls don't wait for each other and cgiwritesettings screws up the settings file 
-			 {				 
-				//	alert(valww);
-				$.get("cgiwritesettings.cgi", 					 //jQuery get function executes cgiwritesettings on Pixie-Net -> webpage values saved to ini file
-			 		 { NAME:pname, 
-						VALUE:valww
-					  },
-				     function (data) {	   
+		if(i==x+1)			// get can not loop over all rows, multiple calls don't wait for each other and cgiwritesettings screws up the settings file 
+		{ 
+			//	alert(valww);
+			$.get("cgiwritesettings.cgi", 					 //jQuery get function executes cgiwritesettings on Pixie-Net -> webpage values saved to ini file
+				{	NAME:pname, 
+					VALUE:valww
+				 },
+				function (data) {	   
 					document.getElementById("output").innerHTML=data;
-				 })  // end get
-			 }	   // end if
-			}	  // end for
-
-
-}
+			})	// end get
+		}		// end if
+	}			// end for
+}				// end function
 </script>
 
 <script>
@@ -116,68 +113,60 @@ $(function(){
 
 	// ------------- button control functions ----------------------- 
 	
- 
-		  $(".clearbutton").click(function(){							// function for  clear settings button
+	$(".clearbutton").click(function(){							// function for  clear settings button
 
-	  		// clear any existing fields 
+	// clear any existing fields 
 	//		  alert("clear");
 	//		$("#initable tbody tr").remove(); 	   // TODO: need to keep or recreate the header
 
-		});		  // end button click 
+	});			// end button click 
 
 
-	  $(".readinibutton").click(function(){							// function for  read settings button
+	$(".readinibutton").click(function(){							// function for  read settings button
 
-//		  	$("#initable tr").remove();		 // remove any old rows
-  //
+	//	$("#initable tr").remove();		 // remove any old rows
 	//		var tableR = document.getElementById("initable");	   		// insert a row and fill first cell
 	//		var row = tableR.insertRow(0);
 	//		row.innerHTML = "<tr> <th>Parameter</th> <th>Values</th> </tr> ";		// restore header
 
+		$.get("settings.ini", function (data) {	   //jQuery get function gets the settings file data
+			var settings = ''; 
+			var dataarray = data.split(/\n/);			  // "split" data string at line ends	 									  		// 
 
+			var arrayLength = dataarray.length;
+			for (var i = 0; i<arrayLength; i++) {				  // loop over every line
 
-		  $.get("settings.ini", function (data) {	   //jQuery get function gets the settings file data
-			   var settings = ''; 
-			   var dataarray = data.split(/\n/);			  // "split" data string at line ends	 									  		// 
-
-				var arrayLength = dataarray.length;
-				for (var i = 0; i<arrayLength; i++) {				  // loop over every line
-
-				  var parname = dataarray[i].split(/ +/);			  // "split" data string at spaces
-				  var linelength = parname.length;
-				  if(parname[0].length>2)
-				  {
-					  var table = document.getElementById("initable");	   		// insert a row and fill first cell
-					  var row = table.insertRow(-1);
-					  var cell0 = row.insertCell(0);
-					  cell0.innerHTML = "<small>"+ parname[0] +"</small>";
+				var parname = dataarray[i].split(/ +/);			  // "split" data string at spaces
+				var linelength = parname.length;
+				if(parname[0].length>2)
+				{
+					var table = document.getElementById("initable");	   		// insert a row and fill first cell
+					var row = table.insertRow(-1);
+					var cell0 = row.insertCell(0);
+					cell0.innerHTML = "<small>"+ parname[0] +"</small>";
 	
-					  var parvalues='';
-					  var space='&nbsp;';
-					  for (var j = 1; j<linelength; j++) {		  				// loop over value entries and make input cells
-					  	  var  parvalues = parvalues + parname[j];
-						  parvalues = parvalues + space;
-					  }
-						  var cell1 = row.insertCell(1);
-						  cell1.innerHTML = "<input class='fieldx' id='par" + i + "' type='text' value=" + parvalues + " onBlur='release("+i+ ")' >";
+					var parvalues='';
+					var space='&nbsp;';
+					for (var j = 1; j<linelength; j++) {		  				// loop over value entries and make input cells
+						var  parvalues = parvalues + parname[j];
+						parvalues = parvalues + space;
+					}
+					var cell1 = row.insertCell(1);
+					cell1.innerHTML = "<input class='fieldx' id='par" + i + "' type='text' value=" + parvalues + " onBlur='release("+i+ ")' >";
 					
-				  }	// end if
-
-            }	  // end for
-               
-			 });  // end get
-			 $("#read1").css("background-color", "green");
-	  });		  // end button click read  settings
+				}	// end if
+			}		// end for
+		});			// end get
+		$("#read1").css("background-color", "green");
+	});				// end button click read  settings
 
 
-	  $("#apply").click(function(){		// function for   apply button
+	$("#apply").click(function(){		// function for   apply button
 		
-	     $.get("progfippi.cgi", function (data) {	//jQuery get function executes progfippi on Pixie-Net -> settings file applied
-				document.getElementById("output").innerHTML=data;
-   		   
-		 });  		// end get
-	  });		   // end button click apply
-
+		$.get("progfippi.cgi", function (data) {	//jQuery get function executes progfippi on Pixie-Net -> settings file applied
+			document.getElementById("output").innerHTML=data;
+		});			// end get
+	});			// end button click apply
 
 });	// end document ready
 
@@ -211,33 +200,26 @@ $(function(){
 	</div>
 
 	<div class="main">
-
 		<div class="w3-card-2">
 			<input id='read' class='readinibutton' type="button" value="Read Settings File">
 			<input id='apply'                      type="button" value="Apply (progfippi)">
 			<input id='clear' class='clearbutton'  type="button" value="clear">
-			 <p> </p>
-  
-			 <table id="initable", style="width:100%">
-			<tr> <th>Parameter</th> <th>Values</th> </tr>
-	
+			<p> </p>
+
+			<table id="initable", style="width:100%">
+				<tr> <th>Parameter</th> <th>Values</th> </tr>
 			 </table>
-
-		 </div>
-
-
+		</div>
 	</div>
 
-		<div class="right">
-			<h2>Response</h2>	
-			<div id="output">
-				 ready
-
-			</div>
+	<div class="right">
+		<h2>Response</h2>	
+		<div id="output">
+			 ready
 		</div>
+	</div>
 
-
-
+</div>
 
 </body>
 </html>

@@ -51,7 +51,6 @@
 			margin-bottom: 20px;
 		}
 
-
 		.w3-card-2{
 			background-color:white;
 			border-radius:3px;
@@ -76,12 +75,12 @@
 
 	</style>
 
-<script>
-$(function(){
+	<script>
+	$(function(){
 
 	// ------------- button control functions -----------------------
 
- 	  $("#adjust").click(function(){		// function for  adjust button
+	  $("#adjust").click(function(){		// function for  adjust button
 	     alert("This function takes ~30 to complete. Please click OK to continue and wait for next message.");
 		  document.getElementById("output").innerHTML="waiting ...";
 		  $.get("findsettings.cgi", function (data) {	//jQuery get function executes findsettings on Pixie-Net -> sets offset to ~2000 but does not change ini file
@@ -107,8 +106,6 @@ $(function(){
 								  visibility: [true, true, true, true]
 								 }
 							  );
-
-
 		 })  		// end get
 	  });		   // end button click refresh
 
@@ -122,11 +119,10 @@ $(function(){
 	  });		   // end button click apply 	  	  	 
 
 
-	  $(".readbutton").click(function(){							// function for  read settings button
-
-		  $.get("cgireadsettings.cgi", function (data) {	   //jQuery get function executes cgireadsettings on Pixie-Net -> return data is list of analog settings
+	$(".readbutton").click(function(){							// function for  read settings button
+		$.get("cgireadsettings.cgi", function (data) {	   //jQuery get function executes cgireadsettings on Pixie-Net -> return data is list of analog settings
 			  
-			   var dataarray = data.split(',');			  // "split" data string at commas
+				var dataarray = data.split(',');			  // "split" data string at commas
 				//alert("Data[0]:  " + dataarray[0]);
 
 				$("#polarity00").val(dataarray[7]);			// assign values to polarity controls
@@ -144,7 +140,7 @@ $(function(){
 				$("#again02").val(dataarray[21]);
 				$("#again03").val(dataarray[27]);
 
-			    $("#dgain00").val(dataarray[10]);			  	// assign values to analog gain controls
+				$("#dgain00").val(dataarray[10]);			  	// assign values to analog gain controls
 				$("#dgain01").val(dataarray[16]);
 				$("#dgain02").val(dataarray[22]);
 				$("#dgain03").val(dataarray[28]);
@@ -156,13 +152,11 @@ $(function(){
  
 			 });  // end get
 			 $("#read1").css("background-color", "green");
-	  });		  // end button click read  settings
-
+	});		  // end button click read  settings
 
 	  $("#apply1").click(function(){		// function for  initialization apply button
 	     $.get("progfippi.cgi", function (data) {	//jQuery get function executes progfippi on Pixie-Net -> settings file applied
-				document.getElementById("output").innerHTML=data;
-    		   
+				document.getElementById("output").innerHTML=data; 
 		 });  		// end get
 		 $(this).css("background-color", "green");
 	  });		   // end button click apply
@@ -175,108 +169,103 @@ $(function(){
 
 
 
-  	// ------------- control field functions -----------------------
+	// ------------- control field functions -----------------------
 
 
-    $(".fieldp").focus(function(){							 // change color of control field while editing
-    	$(this).css("background-color", "yellow");
+	$(".fieldp").focus(function(){							 // change color of control field while editing
+		$(this).css("background-color", "yellow");
 		$("#apply").css("background-color", "yellow");
-  	 });
+	});
 
-	 $(".fieldp").blur(function(){						   
-    	$(this).css("background-color", "white");		   // restore color of control field when done editing
-	
+	$(".fieldp").blur(function(){						   
+		$(this).css("background-color", "white");		   // restore color of control field when done editing
 		 $.get("cgiwritesettings.cgi", 					 //jQuery get function executes cgiwritesettings on Pixie-Net -> webpage values saved to ini file
-		 		 {CCSRA_INVERT_05:"CHANNEL", 
-				 		v0:$("#polarity00").val(), 
-						v1:$("#polarity01").val(),
- 					    v2:$("#polarity02").val(),
-						v3:$("#polarity03").val()
-				  },
-			     function (data) {	   
-				document.getElementById("output").innerHTML=data;
-			 })  // end get
-  	 });  // end blur (deselect)
+				{CCSRA_INVERT_05:"CHANNEL", 
+					v0:$("#polarity00").val(), 
+					v1:$("#polarity01").val(),
+					v2:$("#polarity02").val(),
+					v3:$("#polarity03").val()
+				},
+				function (data) {	   
+					document.getElementById("output").innerHTML=data;
+			})  // end get
+	});  // end blur (deselect)
 
-    $(".fieldo").focus(function(){							 // change color of control field while editing
-    	$(this).css("background-color", "yellow");
+	$(".fieldo").focus(function(){							 // change color of control field while editing
+		$(this).css("background-color", "yellow");
 		$("#apply").css("background-color", "yellow");
-  	 });
+	});
 
-	 $(".fieldo").blur(function(){						   
-    	$(this).css("background-color", "white");		   // restore color of control field when done editing
-	
+	$(".fieldo").blur(function(){						   
+		$(this).css("background-color", "white");		   // restore color of control field when done editing
 		 $.get("cgiwritesettings.cgi", 					 //jQuery get function executes cgiwritesettings on Pixie-Net -> webpage values saved to ini file
-		 		 {VOFFSET:"CHANNEL", 
+		 		{VOFFSET:"CHANNEL", 
 					v0:$("#offset00").val(),
 					v1:$("#offset01").val(),
 					v2:$("#offset02").val(),
 					v3:$("#offset03").val()
-				  },
-			     function (data) {	   
-				document.getElementById("output").innerHTML=data;
+				},
+				function (data) {	   
+					document.getElementById("output").innerHTML=data;
 			 })  // end get
-  	 });  // end blur (deselect)
+	});  // end blur (deselect)
 
-    $(".fielda").focus(function(){							 // change color of control field while editing
-	     	$(this).css("background-color", "yellow");
-  	 	   $("#apply").css("background-color", "yellow");
-	 });
+	$(".fielda").focus(function(){							 // change color of control field while editing
+		$(this).css("background-color", "yellow");
+		$("#apply").css("background-color", "yellow");
+	});
 
-	 $(".fielda").blur(function(){						   
-    	$(this).css("background-color", "white");		   // restore color of control field when done editing
-	
-		 $.get("cgiwritesettings.cgi", 					 //jQuery get function executes cgiwritesettings on Pixie-Net -> webpage values saved to ini file
-		 		 {ANALOG_GAIN:"CHANNEL", 
+	$(".fielda").blur(function(){						   
+		$(this).css("background-color", "white");		   // restore color of control field when done editing
+		$.get("cgiwritesettings.cgi", 					 //jQuery get function executes cgiwritesettings on Pixie-Net -> webpage values saved to ini file
+				 {ANALOG_GAIN:"CHANNEL", 
 					v0:$("#again00").val(),
 					v1:$("#again01").val(),
 					v2:$("#again02").val(),
 					v3:$("#again03").val()
-				  },
-			     function (data) {	   
-				document.getElementById("output").innerHTML=data;
-			 })  // end get
-  	 });  // end blur (deselect)
-	 
-    $(".fieldd").focus(function(){							 // change color of control field while editing
-    	$(this).css("background-color", "yellow");
-		$("#apply").css("background-color", "yellow");
-  	 });
+				},
+				function (data) {	   
+					document.getElementById("output").innerHTML=data;
+			})  // end get
+	});  // end blur (deselect)
 
-	 $(".fieldd").blur(function(){						   
-    	$(this).css("background-color", "white");		   // restore color of control field when done editing
-	
-		 $.get("cgiwritesettings.cgi", 					 //jQuery get function executes cgiwritesettings on Pixie-Net -> webpage values saved to ini file
-		 		 {DIG_GAIN:"CHANNEL", 
+	$(".fieldd").focus(function(){							 // change color of control field while editing
+		$(this).css("background-color", "yellow");
+		$("#apply").css("background-color", "yellow");
+	});
+
+	$(".fieldd").blur(function(){						   
+		$(this).css("background-color", "white");		   // restore color of control field when done editing
+		$.get("cgiwritesettings.cgi", 					 //jQuery get function executes cgiwritesettings on Pixie-Net -> webpage values saved to ini file
+				 {DIG_GAIN:"CHANNEL", 
 					v0:$("#dgain00").val(),
 					v1:$("#dgain01").val(),
 					v2:$("#dgain02").val(),
 					v3:$("#dgain03").val()
-				  },
-			     function (data) {	   
-				document.getElementById("output").innerHTML=data;
-			 })  // end get
-  	 });  // end blur (deselect)
+				},
+				function (data) {	   
+					document.getElementById("output").innerHTML=data;
+			})  // end get
+	});  // end blur (deselect)
 
-    $(".fieldt").focus(function(){							 // change color of control field while editing
-    	$(this).css("background-color", "yellow");
+	$(".fieldt").focus(function(){							 // change color of control field while editing
+		$(this).css("background-color", "yellow");
 		$("#apply").css("background-color", "yellow");
-  	 });
+	});
 
-	 $(".fieldt").blur(function(){						   
-    	$(this).css("background-color", "white");		   // restore color of control field when done editing
-	
-		 $.get("cgiwritesettings.cgi", 					 //jQuery get function executes cgiwritesettings on Pixie-Net -> webpage values saved to ini file
-		 		 {TAU:"CHANNEL", 
+	$(".fieldt").blur(function(){						   
+		$(this).css("background-color", "white");		   // restore color of control field when done editing
+		$.get("cgiwritesettings.cgi", 					 //jQuery get function executes cgiwritesettings on Pixie-Net -> webpage values saved to ini file
+				 {TAU:"CHANNEL", 
 					v0:$("#tau00").val(),
 					v1:$("#tau01").val(),
 					v2:$("#tau02").val(),
 					v3:$("#tau03").val()
-				  },
-			     function (data) {	   
-				document.getElementById("output").innerHTML=data;
-			 })  // end get
-  	 });  // end blur (deselect)
+				},
+				function (data) {	   
+					document.getElementById("output").innerHTML=data;
+			})  // end get
+	});  // end blur (deselect)
 
    	// ------------- checkbox functions -----------------------
 });	// end document ready
@@ -370,32 +359,29 @@ $(function(){
 			<h2>Response</h2>	
 			<div id="output">
 				 ready
-
 			</div>
 		</div>
 
 <script type="text/javascript">
 
- 
+	var g2 = new Dygraph(
+		document.getElementById("graphdiv2"),
+		"ADC.csv", // path to CSV file
+		{   // graph options
+			title: ' ',
+			ylabel: 'ADC value',
+			xlabel: 'Sample number',          
+			labelsDiv: document.getElementById('legend'),
+			legend: 'always',
+			visibility: [true, true, true, true]
+		}
+	);
 
-  var g2 = new Dygraph(
-    document.getElementById("graphdiv2"),
-    "ADC.csv", // path to CSV file
-    {   // graph options
-	  title: ' ',
-	  ylabel: 'ADC value',
-	  xlabel: 'Sample number',          
-	  labelsDiv: document.getElementById('legend'),
-     legend: 'always',
-	  visibility: [true, true, true, true]
-	 }
-  );
+	function change(el) {
+		g2.setVisibility(el.id, el.checked);
+	}
 
-    function change(el) {
-     	g2.setVisibility(el.id, el.checked);
-	  }
-
-      var graphs = [ g2 ];
+	var graphs = [ g2 ];
 </script>
 
 

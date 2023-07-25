@@ -66,6 +66,7 @@ int main(void) {
   unsigned int targetBL[NCHANNELS] = {400,400,400,400};     // TODO: BL% read from ini file, compute 
   double dacadj;
   unsigned int oldadc, adcchanged, saveaux;
+  unsigned int OBsave, csr;
 
 
 
@@ -88,6 +89,20 @@ int main(void) {
 
 
   // ******************* XIA code begins ********************
+
+
+   // check if run is in progress
+   OBsave = mapped[AOUTBLOCK];
+   mapped[AOUTBLOCK] = OB_EVREG;
+   csr = mapped[ACSROUT];
+   if(csr & 0x1)          // test runenable bit
+   {
+      printf("This fuction can not be executed while a run is in progress. CSRout = 0x%x.",csr);
+      mapped[AOUTBLOCK] = OBsave;
+      return(-1);
+   }
+
+
 
   mapped[AOUTBLOCK] = OB_IOREG;	  // read from IO block
   saveaux = mapped[AAUXCTRL];

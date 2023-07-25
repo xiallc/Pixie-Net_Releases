@@ -53,7 +53,7 @@
 #include "PixieNetConfig.h"
 
 
-int main(void) {
+int main(int argc, char *argv[]) {
 
   int fd;
   void *map_addr;
@@ -62,6 +62,7 @@ int main(void) {
   int k, ch;
   FILE * filmca;
   FILE * fil;
+  const char *lm_file = "LMdata.bin";
 
   unsigned int Accept, RunType, SyncT, ReqRunTime, PollTime;
   unsigned int SL[NCHANNELS];
@@ -88,6 +89,7 @@ int main(void) {
   unsigned int PPStime, Nchok;
   unsigned int BLbad[NCHANNELS];
   onlinebin=MAX_MCA_BINS/WEB_MCA_BINS;
+  if (argc==2) lm_file = argv[1];
 
 
   // ******************* read ini file and fill struct with values ********************
@@ -199,8 +201,9 @@ int main(void) {
    mapped[AOUTBLOCK] = OB_RSREG;
    startTS = mapped[AREALTIME];   
  
-   if( (RunType==0x503)  )  {      // grouped list mode run (equiv 0x402)    
-         fil = fopen("LMdata.dt3","w");
+   if( (RunType==0x503)  )  {      // grouped list mode run (equiv 0x402) 
+         if (argc==2)  fil = fopen(lm_file,"w");
+         else          fil = fopen("LMdata.dt3","w");
          fprintf(fil,"Module,Run_Type,Run_Start_ticks,Run_Start_sec,Unused1,Unused2\n");
          fprintf(fil,"%d,0x%x,%u,%lld,--,--\n",0,RunType,startTS,(long long)(starttime));
          fprintf(fil,"Event_No,Hit_Pattern,Event_Time_H,Event_Time_L,PPStime,Time0,Time1,Time2,Time3,Energy0,Energy1,Energy2,Energy3 \n");

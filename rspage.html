@@ -73,9 +73,9 @@ td { padding: 8px; border-top: 1px solid #ddd; font-size: 12px; }
 
 		<div class="fixed_bot">
 			<h2>Help</h2>
-            <i><p>This page displays the run statistics saved to file RS.csv by runstats, startdaq, acquire, etc. </p>
-               <p>During the DAQ, only a few essential lines are saved, full statistics are saved at the end. </p>
-               <p>Use browser button to refresh </p></i>
+			<i><p>This page displays the run statistics saved to file RS.csv by runstats, startdaq, acquire, etc. </p>
+			<p>During the DAQ, only a few essential lines are saved, full statistics are saved at the end. </p>
+			<p>Use browser button to refresh </p></i>
 		</div>
 	</div>
 
@@ -90,39 +90,39 @@ td { padding: 8px; border-top: 1px solid #ddd; font-size: 12px; }
 
 <script>
 
-var rows = []
-var formatdate = d3.time.format("%b %d %Y");
+	var rows = []
+	var formatdate = d3.time.format("%b %d %Y");
 
-d3.csv("RS.csv", function(error, csv) {
-  csv.forEach(function(row) { 
-    rows.push(row);
-  });
+	d3.csv("RS.csv", function(error, csv) {
+		csv.forEach(function(row) { 
+		rows.push(row);
+	});
 
-  var table = d3.select("#datatable").append("table");
-      thead = table.append("thead");
-      tbody = table.append("tbody");
+	var table = d3.select("#datatable").append("table");
+	thead = table.append("thead");
+	tbody = table.append("tbody");
 
-  thead.append("th").text("Parameter");
-  thead.append("th").text("Module");
-  thead.append("th").text("Parameter");
-  thead.append("th").text("Chan. 0");
-  thead.append("th").text("Chan. 1");
-  thead.append("th").text("Chan. 2");
-  thead.append("th").text("Chan. 3");
+	thead.append("th").text("Parameter");
+	thead.append("th").text("Module");
+	thead.append("th").text("Parameter");
+	thead.append("th").text("Chan. 0");
+	thead.append("th").text("Chan. 1");
+	thead.append("th").text("Chan. 2");
+	thead.append("th").text("Chan. 3");
 
-  var tr = tbody.selectAll("tr")
-      .data(rows)
-      .enter().append("tr");
+	var tr = tbody.selectAll("tr")
+		.data(rows)
+		.enter().append("tr");
 
-  var td = tr.selectAll("td")
-        .data(function(d) { return [d.ParameterM, d.Module, d.ParameterC, d.Channel0, d.Channel1, d.Channel2, d.Channel3]; })
-      .enter().append("td")
-        .text(function(d) { return d; });
+	var td = tr.selectAll("td")
+		.data(function(d) { return [d.ParameterM, d.Module, d.ParameterC, d.Channel0, d.Channel1, d.Channel2, d.Channel3]; })
+		.enter().append("td")
+		.text(function(d) { return d; });
 
-  var width = 80,
-      height = d3.select("table")[0][0].clientHeight,
-      mx = 10,
-      radius = 2;
+	var width = 80,
+		height = d3.select("table")[0][0].clientHeight,
+		mx = 10,
+		radius = 2;
 });
 </script>
   

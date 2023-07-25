@@ -54,6 +54,7 @@ int main(void) {
   void *map_addr;
   int size = 4096;
   volatile unsigned int *mapped;
+  unsigned int OBsave, csr;
 
 
   // *************** PS/PL IO initialization *********************
@@ -74,7 +75,19 @@ int main(void) {
   mapped = (unsigned int *) map_addr;
 
   // ************** XIA code begins **************************
-  
+   
+  // check if run is in progress
+   OBsave = mapped[AOUTBLOCK];
+   mapped[AOUTBLOCK] = OB_EVREG;
+   csr = mapped[ACSROUT];
+   if(csr & 0x1)          // test runenable bit
+   {
+      printf("This fuction can not be executed while a run is in progress. CSRout = 0x%x.",csr);
+      mapped[AOUTBLOCK] = OBsave;
+      return(-1);
+   }
+
+
   mapped[AOUTBLOCK] = OB_RSREG;
   read_print_runstats(0, 0, mapped);
   mapped[AOUTBLOCK] = OB_IOREG;

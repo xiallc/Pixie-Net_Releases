@@ -51,7 +51,6 @@
 			margin-bottom: 20px;
 		}
 
-
 		.w3-card-2{
 			background-color:white;
 			border-radius:3px;
@@ -91,85 +90,82 @@ $(document).ready(function(){
 
 	// ------------- button control functions -----------------------
 
+	$("#apply").click(function(){		// function for  refresh button
+		$("#apply").css("background-color", "lightgray");
+		$("#read").css("background-color", "lightgray");
+		$("#start").css("background-color", "lightgray");
+		$.get("progfippi.cgi", function (data) {	//jQuery get function executes progfippi on Pixie-Net -> settings file applied
+			//alert(data);	  
+			document.getElementById("output").innerHTML=data;
+		})			// end get
+	});				// end button click refresh
 
-	  $("#apply").click(function(){		// function for  refresh button
-		  $("#apply").css("background-color", "lightgray");
-		  $("#read").css("background-color", "lightgray");
-		  $("#start").css("background-color", "lightgray");
-		  $.get("progfippi.cgi", function (data) {	//jQuery get function executes progfippi on Pixie-Net -> settings file applied
-		  		//alert(data);	  
-  			   document.getElementById("output").innerHTML=data;
-		 })  		// end get
-	  });		   // end button click refresh
 
+	$("#read").click(function(){							// function for  read settings button
 
-	  $("#read").click(function(){							// function for  read settings button
+		$.get("cgireadsettings.cgi", function (data) {	   //jQuery get function executes cgireadsettings on Pixie-Net -> return data is list of analog settings
+			//alert("Data:  " + data);
+			
+			var dataarray = data.split(',');			  // "split" data string at commas
+			//alert("Data[0]:  " + dataarray[0]);
 
-		  $.get("cgireadsettings.cgi", function (data) {	   //jQuery get function executes cgireadsettings on Pixie-Net -> return data is list of analog settings
-		  		//alert("Data:  " + data);
-			  
-			   var dataarray = data.split(',');			  // "split" data string at commas
-				//alert("Data[0]:  " + dataarray[0]);
-
-				$("#runtime").val(dataarray[33]);			// assign values to polarity controls
-				$("#runtype").val(dataarray[31]);
+			$("#runtime").val(dataarray[33]);			// assign values to polarity controls
+			$("#runtype").val(dataarray[31]);
 	
-			 })  // end get
-	  });		  // end button click read  settings
-
-	  $("#start").click(function(){		// function for  refresh button
-	  			move()
-	//  		alert("click");
-		  $.get("startdaq.cgi", function (data) {	//jQuery get function executes startdaq on Pixie-Net -> run in progress
-		  		//alert(data);  
-	   		document.getElementById("output").innerHTML=data; //"hello hello hello"; //data;
-
-		 })  		// end get
-	  });		   // end button click refresh
+		})			// end get
+	});				// end button click read  settings
 
 
-  	// ------------- control field functions -----------------------
+	$("#start").click(function(){		// function for  refresh button
+		move()
+		// alert("click");
+		$.get("startdaq.cgi", function (data) {	//jQuery get function executes startdaq on Pixie-Net -> run in progress
+			//alert(data);  
+			document.getElementById("output").innerHTML=data; //"hello hello hello"; //data;
+		})			// end get
+	});				// end button click refresh
 
 
-    $("#runtime").focus(function(){							 // change color of control field while editing
-    	$(this).css("background-color", "yellow");
+	// ------------- control field functions -----------------------
+
+
+	$("#runtime").focus(function(){							 // change color of control field while editing
+		$(this).css("background-color", "yellow");
 		$("#apply").css("background-color", "yellow");
-  	 });
+	});
 
-	 $("#runtime").blur(function(){						   
-    	$(this).css("background-color", "white");		   // restore color of control field when done editing
+
+	$("#runtime").blur(function(){						   
+		$(this).css("background-color", "white");		   // restore color of control field when done editing
 	
-		 $.get("cgiwritesettings.cgi", 					 //jQuery get function executes cgiwritesettings on Pixie-Net -> webpage values saved to ini file
-		 		 {REQ_RUNTIME:"MODULE", 
-				 		v0:$("#runtime").val()
-				  },
-			     function (data) {	   
-		  		//alert(data);
-				document.getElementById("output").innerHTML=data;
-			 })  // end get
-  	 });  // end blur (deselect)
+		$.get("cgiwritesettings.cgi", 					 //jQuery get function executes cgiwritesettings on Pixie-Net -> webpage values saved to ini file
+			{REQ_RUNTIME:"MODULE", 
+					v0:$("#runtime").val()
+			},
+			function (data) {	   
+			//alert(data);
+			document.getElementById("output").innerHTML=data;
+		})		// end get
+	});			// end blur (deselect)
 
-	  $("#runtype").focus(function(){							 // change color of control field while editing
-    	$(this).css("background-color", "yellow");
+
+	$("#runtype").focus(function(){							 // change color of control field while editing
+		$(this).css("background-color", "yellow");
 		$("#apply").css("background-color", "yellow");
-  	 });
+	});
 
-	 $("#runtype").blur(function(){						   
-    	$(this).css("background-color", "white");		   // restore color of control field when done editing
+	$("#runtype").blur(function(){						   
+		$(this).css("background-color", "white");		   // restore color of control field when done editing
 	
-		 $.get("cgiwritesettings.cgi", 					 //jQuery get function executes cgiwritesettings on Pixie-Net -> webpage values saved to ini file
-		 		 {RUN_TYPE:"MODULE", 
-						v1:$("#runtype").val()
-				  },
-			     function (data) {	   
-		  		//alert(data);
-				document.getElementById("output").innerHTML=data;
-			 })  // end get
-  	 });  // end blur (deselect)
-
-
-
-
+		$.get("cgiwritesettings.cgi", 					 //jQuery get function executes cgiwritesettings on Pixie-Net -> webpage values saved to ini file
+			{RUN_TYPE:"MODULE", 
+				v1:$("#runtype").val()
+			},
+			function (data) {	   
+			//alert(data);
+			document.getElementById("output").innerHTML=data;
+		})		// end get
+	});			// end blur (deselect)
 
 
 });	// end document ready
@@ -216,21 +212,19 @@ $(document).ready(function(){
 			<p> </p>
 
 			<div id="myProgress">
-			  <div id="myBar"> </div>
+				<div id="myBar"> </div>
 			</div>
 
 			<table style="width:60%">
-
-			<tr id=row00>
-				<td>REQ_RUNTIME (s)</td>
-			   <td> <input class="field" type="text" size="8" id="runtime" value="0"> </td>
-			 </tr>
-			 <tr id=row01>
-				<td>RUN_TYPE</td>
-			   <td> <input class="field" type="text" size="8" id="runtype" value="0x400"> </td>
-			 </tr>
-
-			 </table>
+				<tr id=row00>
+					<td>REQ_RUNTIME (s)</td>
+					<td> <input class="field" type="text" size="8" id="runtime" value="0"> </td>
+				</tr>
+				<tr id=row01>
+					<td>RUN_TYPE</td>
+					<td> <input class="field" type="text" size="8" id="runtype" value="0x400"> </td>
+				</tr>
+			</table>
 			<p> </p>
 
 		</div>
@@ -240,19 +234,19 @@ $(document).ready(function(){
 			<p> <div class="tooltip"> <b>After</b>
 			<span class="tooltiptext">These links point to files generated by the DAQ (startdaq, acquire, etc).
 						Clicking on them will prompt for download actions</span>
-		</div>
+			</div>
 			the data acquisition, open/download
-		   <ul>
+			<ul>
 				<li> <a href="LMdata0.bin"> 0x100 </a> Binary list mode data (from run type 0x100 [Pixie-16])</li>
 				<li> <a href="LMdata0.b00"> 0x400/402</a> Binary list mode data (from run types 0x400, 0x402)</li>
-			   <li> <a href="MCA.csv"> MCA spectra </a> as csv file</li>
-			   <li> <a href="RS.csv"> Run statistics </a> as csv file (full)</li>
+				<li> <a href="MCA.csv"> MCA spectra </a> as csv file</li>
+				<li> <a href="RS.csv"> Run statistics </a> as csv file (full)</li>
 			</ul>
 
-		   <p>View most recent data<b> in plots and tables</b> </p>
+			<p>View most recent data<b> in plots and tables</b> </p>
 			<ul>
 				<li> <a href="mcapage.html">MCA spectra</a>
-			   <li> <a href="rspage.html">Run status</a>
+				<li> <a href="rspage.html">Run status</a>
 			</ul>
 		</div>
 	</div>
@@ -261,32 +255,30 @@ $(document).ready(function(){
 		<h2>Response</h2>	
 		<div id="output">
 			 ready
-
 		</div>
 	</div>
 
+</div>
 
- </div>
-
- <script>
-var i = 0;
-function move() {
-  if (i == 0) {
-    i = 1;
-    var elem = document.getElementById("myBar");
-    var width = 1;
-    var id = setInterval(frame, $("#runtime").val() * 10);
-    function frame() {
-      if (width >= 100) {
-        clearInterval(id);
-        i = 0;
-      } else {
-        width++;
-        elem.style.width = width + "%";
-      }
-    }
-  }
-}
+<script>
+	var i = 0;
+	function move() {
+		if (i == 0) {
+			i = 1;
+			var elem = document.getElementById("myBar");
+			var width = 1;
+			var id = setInterval(frame, $("#runtime").val() * 10);
+			function frame() {
+				if (width >= 100) {
+					clearInterval(id);
+					i = 0;
+				} else {
+					width++;
+					elem.style.width = width + "%";
+				}
+			}
+		}
+	}
 </script>
 
 

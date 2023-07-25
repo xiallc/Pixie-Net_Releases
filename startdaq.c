@@ -53,7 +53,7 @@
 #include "PixieNetConfig.h"
 
 
-int main(void) {
+int main(int argc, char *argv[]) {
 
   int fd;
   void *map_addr;
@@ -62,6 +62,7 @@ int main(void) {
   int k, ch, tmpS;
   FILE * filmca;
   FILE * fil;
+  const char *lm_file = "LMdata.bin";  
 
   unsigned int Accept, RunType, SyncT, ReqRunTime, PollTime, CW;
   unsigned int SL[NCHANNELS];
@@ -91,7 +92,7 @@ int main(void) {
   unsigned int wm = WATERMARK;
   unsigned int BLbad[NCHANNELS];
   onlinebin=MAX_MCA_BINS/WEB_MCA_BINS;
-
+  if (argc==2) lm_file = argv[1];
 
   // ******************* read ini file and fill struct with values ********************
   
@@ -201,20 +202,23 @@ int main(void) {
       mapped[AOUTBLOCK] = OB_RSREG;
       startTS = mapped[AREALTIME];
       if(RunType==0x500)   {                       // generic runtype is one value per line
-         fil = fopen("LMdata.txt","w");
+         if (argc==2)  fil = fopen(lm_file,"w");
+         else          fil = fopen("LMdata.txt","w");
          fprintf(fil, "Module:\t%hu\n",0);
          fprintf(fil, "Run Type:\t0x%x\n",RunType);
          fprintf(fil,"Run Start Time Stamp (ticks) :\t%u\n", startTS);	//
          fprintf(fil,"Run Start Time (s) :\t%lld\n", (long long)starttime);			// this is only precise to a second or so
       } 
       if(RunType==0x501){                                     // compressed runtype has columns
-         fil = fopen("LMdata.dat","w");
+         if (argc==2)  fil = fopen(lm_file,"w");
+         else          fil = fopen("LMdata.dat","w");
          fprintf(fil,"Module,Run_Type,Run_Start_ticks,Run_Start_sec,Unused1,Unused2\n");
          fprintf(fil,"%d,0x%x,%u,%lld,--,--\n",0,RunType,startTS,(long long)(starttime));
          fprintf(fil,"No,Ch,Hit,Time_H,Time_L,Energy\n");
       }
       if(RunType==0x502){                                     // compressed PSA runtype has more columns
-         fil = fopen("LMdata.dt2","w");
+         if (argc==2)  fil = fopen(lm_file,"w");
+         else fil = fopen("LMdata.dt2","w");
          fprintf(fil,"Module,Run_Type,Run_Start_ticks,Run_Start_sec,Unused1,Unused2\n");
          fprintf(fil,"%d,0x%x,%u,%lld,--,--\n",0,RunType,startTS,(long long)(starttime));
          fprintf(fil,"Event_No,Channel_No,Hit_Pattern,Event_Time_H,Event_Time_L,Energy,Amplitude,CFD,Base,Q0,Q1,PSAvalue\n");
@@ -222,7 +226,8 @@ int main(void) {
       if(RunType==0x400){
         // write a 0x400 header
         // fwrite is slow so we will write to a buffer, and then to the file.
-        fil = fopen("LMdata.b00","wb");
+        if (argc==2)  fil = fopen(lm_file,"wb");
+        else          fil = fopen("LMdata.b00","wb");
         buffer1[0] = BLOCKSIZE_400;
         buffer1[1] = 0;                                       // module number (get from settings file?)
         buffer1[2] = RunType;

@@ -16,13 +16,13 @@ software version 2.24.
 ## Compatibility Information
 
 ### Supported Hardware variants
-* Hardware Revision B, 12-bit PTP
+* Hardware Revision B
 
 ### Firmware
 | Firmware Type | Firmware ID |	Firmware Files |
 | --------------| ------------| -------------- |
-| PTP | 0x2227 | sd-bootfiles-pn-PTP-2p27.zip | 
- 
+| Standard | 0x0227 | sd-bootfiles-pn-STD-2p27.zip | 
+| PSA | 0x1228 | sd-bootfiles-pn-PSA-2p28.zip | 
 
 ## File Name Conventions
 

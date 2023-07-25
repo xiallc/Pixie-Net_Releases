@@ -62,6 +62,7 @@ int main(void) {
   int size = 4096;
   volatile unsigned int *mapped;
   int k, addr;
+  unsigned int OBsave, csr;
 
 
   // ******************* read ini file and fill struct with values ********************
@@ -119,6 +120,20 @@ int main(void) {
 
 
   // ******************* XIA code begins ********************
+
+   // check if run is in progress
+   OBsave = mapped[AOUTBLOCK];
+   mapped[AOUTBLOCK] = OB_EVREG;
+   csr = mapped[ACSROUT];
+   if(csr & 0x1)          // test runenable bit
+   {
+      printf("This fuction can not be executed while a run is in progress. CSRout = 0x%x.",csr);
+      mapped[AOUTBLOCK] = OBsave;
+      return(-1);
+   }
+
+
+
   // first, set CSR run control options   
   mapped[ACSRIN] = 0x0000; // all off
   mapped[AOUTBLOCK] = OB_IOREG;	  // read from IO block
