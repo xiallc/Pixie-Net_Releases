@@ -918,6 +918,8 @@ int init_PixieNetFippiConfig_from_file( const char * const filename,
   ret = parse_multiple_int_val( label_to_values, "THRESH_ADC_AVG", config->THRESH_ADC_AVG, ignore_missing );
   if( (ignore_missing==0 && ret==1) || (ret<0) )  return -47;
  
+  ret = parse_multiple_int_val( label_to_values, "MAXWIDTH", config->MAXWIDTH, ignore_missing );
+  if( (ignore_missing==0 && ret==1) || (ret<0) )  return -48;
  
     if(ignore_missing==1) 
   {

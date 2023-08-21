@@ -85,7 +85,7 @@ int main(void) {
     return rval;
   }
 
-  unsigned int  mval, dac;
+  unsigned int  mval, dac, verr;
   unsigned int CW, FR, SL[NCHANNELS], SG[NCHANNELS], FL[NCHANNELS], FG[NCHANNELS], TH[NCHANNELS];
   unsigned int PSAM, PSEP, TL[NCHANNELS], TD[NCHANNELS], GW[NCHANNELS], GD[NCHANNELS];
   unsigned int QDCL0[NCHANNELS], QDCL1[NCHANNELS], QDCD0[NCHANNELS], QDCD1[NCHANNELS];
@@ -127,9 +127,10 @@ int main(void) {
    csr = mapped[ACSROUT];
    if(csr & 0x1)          // test runenable bit
    {
-      printf("This fuction can not be executed while a run is in progress. CSRout = 0x%x.",csr);
+      printf("This function should not be executed while a run is in progress! CSRout = 0x%x.\n",csr);
+      printf("Now repropgramming FPGA and clearing any active runs.\n");
       mapped[AOUTBLOCK] = OBsave;
-      return(-1);
+      //return(-1);
    }
 
 
@@ -407,7 +408,7 @@ int main(void) {
    }
 
 
-   // waveforms: R5, R6
+   // waveforms, MAXWIDTH: R5, R6
    for( k = 0; k < NCHANNELS; k ++ )
    {
       TL[k] = BLOCKSIZE_400*(int)floor(fippiconfig.TRACE_LENGTH[k]*ADC_CLK_MHZ/BLOCKSIZE_400);       // multiply time in us *  # ticks per us = time in ticks; must be multiple of BLOCKSIZE_400
@@ -434,7 +435,7 @@ int main(void) {
         { 
             if(TL[k] != TL[0]) mval =0;
         }
-        if(mval==0) printf("WARNING: TRACE_LENGTHs must be the same for all channels for current LM file parser to work");      
+        if(mval==0) printf("WARNING: TRACE_LENGTHs must be the same for all channels for current LM file parser to work\n");      
     }
 
    // check limits on a few parameters that are not part of R5,6 but traditionally in this order in the settings file
@@ -465,7 +466,12 @@ int main(void) {
          printf("Invalid PSA_THRESHOLD = %d, maximum %d\n",fippiconfig.PSA_THRESHOLD[k],MAX_PSATH);
          return -5300-k;                                                       
       }
+      if(fippiconfig.MAXWIDTH[k] > MAX_MAXWIDTH) {
+         printf("Invalid MAXWIDTH = %d, maximum %d\n",fippiconfig.MAXWIDTH[k],MAX_MAXWIDTH);
+         return -5200-k;                                                       
+      }
       mval = (TD[k]+TWEAK_UD)/4;           // add tweak to accomodate trigger pipelining delay
+      mval = mval + (fippiconfig.MAXWIDTH[k]  <<  21);  //
       mval = mval + (TL[k]>0)*(1<<29);     // set bit 29 if TL is not zero
       addr = N_PL_IN_PAR+k*N_PL_IN_PAR;   // channel registers begin after NPLPAR system registers, NPLPAR each
       mapped[addr+5] = mval;
@@ -746,8 +752,24 @@ int main(void) {
 
    // ***** check HW info *********
    k = hwinfo(mapped);
-   printf("Revision %04X, Serial Number %d \n",(k>>16) & 0xFFFF, k & 0xFFFF);
-   if(k==0) printf("WARNING: HW may be incompatible with this SW/FW \n");
+   printf("HW VERSION %04X, Serial Number %d \n",(k>>16) & 0xFFFF, k & 0xFFFF);
+   if(k==0) printf("WARNING: missing, unknown, or unprogrammed HW \n");
+
+   // check compatibility with FW
+   mapped[AOUTBLOCK] = OB_RSREG;
+   mval  = mapped[ARS0_MOD+11];
+   mapped[AOUTBLOCK] = OB_IOREG;
+   printf("FW VERSION %08X \n",mval);
+   verr = 1;
+
+   // test: FW must be compiled for this HW, upper 4 digits
+   if(  ((k>>16)    & 0xFFFF) == ((mval>>16) & 0xFFFF) )    
+      verr=0;    // if exact match: ok
+   if( (((k>>16)    & 0xFFFF) == 0xA981 ) &&
+       (((mval>>16) & 0xFFFF) == 0xA991 ) )
+      verr=0;    // std FW on PTP HW is ok (but not the other way round)      
+
+   if(verr)  printf("WARNING: The pulse processing FW is not compiled for the current HW \n");
 
 
  //  printf("Executed in %s \n",argv[0];

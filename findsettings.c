@@ -67,6 +67,8 @@ int main(void) {
   double dacadj;
   unsigned int oldadc, adcchanged, saveaux;
   unsigned int OBsave, csr;
+  unsigned int revsn, rev;
+  unsigned int ADCmax=4000;
 
 
 
@@ -97,11 +99,30 @@ int main(void) {
    csr = mapped[ACSROUT];
    if(csr & 0x1)          // test runenable bit
    {
-      printf("This fuction can not be executed while a run is in progress. CSRout = 0x%x.",csr);
+      printf("This function can not be executed while a run is in progress. CSRout = 0x%x.",csr);
       mapped[AOUTBLOCK] = OBsave;
       return(-1);
    }
 
+  revsn = hwinfo(mapped);
+  rev = (revsn>>16) & 0xFFFF;
+   if ( (rev == PN_BOARD_VERSION_12_250_A)     ||
+        (rev == PN_BOARD_VERSION_12_250_B)     ||
+        (rev == PN_BOARD_VERSION_12_250_B_PTP) )
+   { 
+      printf("Using offset targets for 12 bit version\n");
+   } 
+   else 
+   {
+      printf("Using offset targets for 14 bit version\n");
+      for( ch = 0; ch < NCHANNELS; ch ++ )
+      {
+         mins[ch] = mins[ch]*4;
+         mint[ch] = mint[ch]*4;
+         targetBL[ch] = targetBL[ch]*4;
+      }
+      ADCmax = ADCmax *4;
+   }
 
 
   mapped[AOUTBLOCK] = OB_IOREG;	  // read from IO block
@@ -196,7 +217,7 @@ int main(void) {
          //printf("Channel %u: addr 0x%x, DAC value %u, adc %u\n",ch,addr,dac,adc);
          dac = dac + 2048;
          k=k+1;
-     } while ( ((adc>4000) | (adc<100)) & (dac < 65536)  );    //& (k<33)
+     } while ( ((adc>ADCmax) | (adc<100)) & (dac < 65536)  );    //& (k<33)
      //printf("Channel %u: DAC value %u, adc %u\n",ch,dac,adc);
      dac = dac - 2048;               // dac is now the lowest valid DAC value
   

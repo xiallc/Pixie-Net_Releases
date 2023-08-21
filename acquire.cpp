@@ -288,6 +288,7 @@ int main( int argc, char **argv )
   unsigned int BLcut[NCHANNELS], BLavg[NCHANNELS];
   long queued;
   int pause_queue = 0;
+  int  rev, scale14B;
 
   //Set the handler for if the user hits ctrl-c
   g_datataking_stop_requested = 0;
@@ -343,7 +344,22 @@ int main( int argc, char **argv )
    
    // **********  Compute Coefficients for E Computation and other initialization ************
   PixieNetRunningStats runstats;
-  init_PixieNetRunningStats( &runstats );             
+  init_PixieNetRunningStats( &runstats ); 
+  
+   rev = hwinfo(mapped);
+   // energy filters for 14bit version derive from 4x larger ADC samples, but should map to same E in MCA, so divide result by 4
+   if ( (((rev>>16) & 0xFFFF) == PN_BOARD_VERSION_12_250_A)     ||
+        (((rev>>16) & 0xFFFF) == PN_BOARD_VERSION_12_250_B)     ||
+        (((rev>>16) & 0xFFFF) == PN_BOARD_VERSION_12_250_B_PTP) )
+   { 
+      //printf("Using E scale for 12 bit version");
+      scale14B = 1;
+   } 
+   else 
+   {
+      //printf("Using E scale for 14 bit version");
+      scale14B = 4;
+   }        
 
 
   for( int k = 0; k < NCHANNELS; k ++ )
@@ -361,9 +377,9 @@ int main( int argc, char **argv )
     runstats.Cg[k] = 1.0 - q;
     runstats.C1[k] = (1.0 - q) / (1.0 - elm);
     
-    runstats.C0[k] = runstats.C0[k] * fippiconfig.DIG_GAIN[k];
-    runstats.Cg[k] = runstats.Cg[k] * fippiconfig.DIG_GAIN[k];
-    runstats.C1[k] = runstats.C1[k] * fippiconfig.DIG_GAIN[k];
+    runstats.C0[k] = runstats.C0[k] * fippiconfig.DIG_GAIN[k] / scale14B;
+    runstats.Cg[k] = runstats.Cg[k] * fippiconfig.DIG_GAIN[k] / scale14B;
+    runstats.C1[k] = runstats.C1[k] * fippiconfig.DIG_GAIN[k] / scale14B;
 
     BLcut[k]       = fippiconfig.BLCUT[k];
     BLavg[k]       = 65536 - fippiconfig.BLAVG[k];

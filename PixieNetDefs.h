@@ -34,10 +34,11 @@
  *----------------------------------------------------------------------*/
 
 // system constants
-#define PS_CODE_VERSION 0x0228
+#define PS_CODE_VERSION 0x0230
 #define PN_BOARD_VERSION_12_250_A 0xA990    
 #define PN_BOARD_VERSION_12_250_B 0xA991  
 #define PN_BOARD_VERSION_12_250_B_PTP 0xA981  
+#define PN_BOARD_VERSION_12_250_B_14B 0xA9A1  
 #define ADC_CLK_MHZ 250
 #define SYSTEM_CLOCK_MHZ 125
 #define FILTER_CLOCK_MHZ 125
@@ -83,6 +84,7 @@
 #define MAX_AVG_ADC 65535
 #define MIN_TH_AVG_ADC 1
 #define MAX_TH_AVG_ADC 4095
+#define MAX_MAXWIDTH  255
 
 
 
@@ -174,7 +176,7 @@
 #define SDAENA                4     // bit definitions for I2C I/O
 #define N_PL_IN_PAR           16    // number of input parameters for system and each channel
 #define N_PL_RS_PAR           32    // number of runstats parameters for system and each channel
-#define N_USED_RS_PAR         20    // not all RS parapmeters are used, can save some readout and printout cycles
+#define N_USED_RS_PAR         22    // not all RS parapmeters are used, can save some readout and printout cycles
 #define MAX_PAR_NAME_LENGTH   65    // Maximum length of parameter names
 #define BLREADPERIOD          20
 #define MIN_POLL_TIME         100

@@ -248,6 +248,7 @@ int hwinfo( volatile unsigned int *mapped )
    if ( (mval == PN_BOARD_VERSION_12_250_A)     ||
         (mval == PN_BOARD_VERSION_12_250_B)     ||
         (mval == PN_BOARD_VERSION_12_250_B_PTP) ||
+        (mval == PN_BOARD_VERSION_12_250_B_14B) ||
         (mval == 0                        )   )
         //printf("HW Revision 0x%04X\n",mval);
         revsn = mval << 16;
@@ -436,7 +437,7 @@ char Module_PLRS_Names[N_PL_RS_PAR][MAX_PAR_NAME_LENGTH] = {
    "reserved",
    "reserved",
    "reserved",
-   "reserved",	    //30
+   "reserved",	    //30     
    "reserved"
 };
 
@@ -462,8 +463,8 @@ char Channel_PLRS_Names[N_PL_RS_PAR][MAX_PAR_NAME_LENGTH] = {
    "NPPI*", 
    "NPPI*", 
    //	"reserved",
-   "reserved",
-   "reserved",		    //20
+   "NFPILE",
+   "NFPILE",		    //20
    "reserved",
    "reserved",
    "reserved",

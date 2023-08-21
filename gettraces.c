@@ -85,7 +85,7 @@ int main(void) {
    csr = mapped[ACSROUT];
    if(csr & 0x1)          // test runenable bit
    {
-      printf("This fuction can not be executed while a run is in progress. CSRout = 0x%x.",csr);
+      printf("This function can not be executed while a run is in progress. CSRout = 0x%x.",csr);
       mapped[AOUTBLOCK] = OBsave;
       return(-1);
    }

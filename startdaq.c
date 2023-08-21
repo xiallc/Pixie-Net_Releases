@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
   double elm, q;
   double cfdlev;
   time_t starttime, currenttime;
-  unsigned int startTS, w0, w1, tmpI, revsn;
+  unsigned int startTS, w0, w1, tmpI, revsn, scale14B;
   //double m, c0, c1, c2, c3;
   unsigned int evstats, R1, hit, timeL, timeH, psa0, psa1, cfd0;
   unsigned int psa_base, psa_Q0, psa_Q1, psa_ampl, psa_R;
@@ -173,6 +173,21 @@ int main(int argc, char *argv[]) {
 
 
    // **********************  Compute Coefficients for E Computation  ********************** 
+   revsn = hwinfo(mapped);
+   // energy filters for 14bit version derive from 4x larger ADC samples, but should map to same E in MCA, so divide result by 4
+   if ( (((revsn>>16) & 0xFFFF) == PN_BOARD_VERSION_12_250_A)     ||
+        (((revsn>>16) & 0xFFFF) == PN_BOARD_VERSION_12_250_B)     ||
+        (((revsn>>16) & 0xFFFF) == PN_BOARD_VERSION_12_250_B_PTP) )
+   { 
+      //printf("Using E scale for 12 bit version");
+      scale14B = 1;
+   } 
+   else 
+   {
+      //printf("Using E scale for 14 bit version");
+      scale14B = 4;
+   }
+
    dt = 1.0/FILTER_CLOCK_MHZ;
    for( k = 0; k < NCHANNELS; k ++ )
    { 
@@ -183,12 +198,12 @@ int main(int argc, char *argv[]) {
       C1[k] = (1.0-q)/(1.0-elm);
       // printf("%f  %f   %f\n", C0[k], Cg[k], C1[k]);    
       
-      C0[k] = C0[k] * Dgain[k];
-      Cg[k] = Cg[k] * Dgain[k];
-      C1[k] = C1[k] * Dgain[k];
+      C0[k] = C0[k] * Dgain[k] / scale14B;
+      Cg[k] = Cg[k] * Dgain[k] / scale14B;
+      C1[k] = C1[k] * Dgain[k] / scale14B;
    }
 
-   revsn = hwinfo(mapped);
+   
 
     // ********************** Run Start **********************
 

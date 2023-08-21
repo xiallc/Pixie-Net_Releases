@@ -16,13 +16,15 @@ software version 2.24.
 ## Compatibility Information
 
 ### Supported Hardware variants
-* Hardware Revision B
+* Hardware Revision B, 12 and 14 bit
 
 ### Firmware
-| Firmware Type | Firmware ID |	Firmware Files |
-| --------------| ------------| -------------- |
-| Standard | 0x0227 | sd-bootfiles-pn-STD-2p27.zip | 
-| PSA | 0x1228 | sd-bootfiles-pn-PSA-2p28.zip | 
+
+| Firmware Type | Bit Res | Firmware ID | Firmware Files |
+| --------------| ------- | ------------| -------------- |
+| Standard | 12 | 0xA991_0227 | /sd-bootfiles-pn-STD-2p27.zip | 
+| PSA | 12 | 0xA991_1228 | sd-bootfiles-pn-PSA-2p28.zip | 
+| Standard | 14 | 0xA9A1_0230 | sd-bootfiles-pn-14B-2p30.zip | 
 
 ## File Name Conventions
 

@@ -266,12 +266,13 @@ typedef struct PixieNetFippiConfig {
   unsigned int QDC1_LENGTH[NCHANNELS]; //          0      0      0      0              Length of PSA sum
   unsigned int QDC0_DELAY[NCHANNELS]; //           0      0      0      0              Delay of PSA sum relative to trigger point
   unsigned int QDC1_DELAY[NCHANNELS]; //           0      0      0      0              Delay of PSA sum relative to trigger point
-  unsigned int QDC_DIV8[NCHANNELS];//             0      0      0      0              divide QDC sums by another factor 8, to fit in 64K max output number
+  unsigned int QDC_DIV8[NCHANNELS];//             0      0      0      0               divide QDC sums by another factor 8, to fit in 64K max output number
   double MCA2D_SCALEX[NCHANNELS];    //     1      1      1      1                     scaling factor for 2D histogram (bin to increment is Ex/ MCA2D_SCALEX)
   double MCA2D_SCALEY[NCHANNELS];    //     1      1      1      1                     scaling factor for 2D histogram (bin to increment is Ey/ MCA2D_SCALEY)
   double PSA_NG_THRESHOLD[NCHANNELS];//     1      1      1      1                     threshold to distinguish neutrons and gammas in PSA parameter R=Q0/Q1
   unsigned int ADC_AVG[NCHANNELS]; //           0      0      0      0                 Number of samples to average for triggered oscilloscope mode
-  unsigned int THRESH_ADC_AVG[NCHANNELS];//             0      0      0      0         Trigger thrshold (absolute ADC steps) for triggered oscilloscope mode 
+  unsigned int THRESH_ADC_AVG[NCHANNELS];//             0      0      0      0         Trigger threshold (absolute ADC steps) for triggered oscilloscope mode 
+  unsigned int MAXWIDTH[NCHANNELS];//             0      0      0      0               maximum time over trigger threshold before considered piled up (0=disable) 
 
   } PixieNetFippiConfig;
 
