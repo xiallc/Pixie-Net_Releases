@@ -33,8 +33,11 @@
  * SUCH DAMAGE.
  *----------------------------------------------------------------------*/
 
+// generic
+#define PI					3.14159265358979
+
 // system constants
-#define PS_CODE_VERSION 0x0230
+#define PS_CODE_VERSION 0x0232
 #define PN_BOARD_VERSION_12_250_A 0xA990    
 #define PN_BOARD_VERSION_12_250_B 0xA991  
 #define PN_BOARD_VERSION_12_250_B_PTP 0xA981  
@@ -102,6 +105,7 @@
 #define ACOUNTER_CLR  0x009
 #define ARTC_CLR      0x00A
 #define ABVAL         0x00B
+#define ASPI          0x00C
 #define CA_DAC        0x004
 
 // block 1

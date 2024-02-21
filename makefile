@@ -42,8 +42,8 @@ startdaq: startdaq.o PixieNetCommon.o PixieNetConfig.o PixieNetDefs.h
 coincdaq: coincdaq.o PixieNetCommon.o PixieNetConfig.o PixieNetDefs.h
 	g++ coincdaq.o PixieNetCommon.o PixieNetConfig.o $(LIBS) -o coincdaq
 
-findsettings: findsettings.o PixieNetDefs.h
-	gcc findsettings.o PixieNetCommon.o $(LIBS) -o findsettings
+findsettings: findsettings.o PixieNetCommon.o PixieNetConfig.o PixieNetDefs.h
+	g++ findsettings.o PixieNetCommon.o PixieNetConfig.o $(LIBS) -o findsettings
 
 acquire: acquire.o PixieNetConfig.o PixieNetCommon.o PixieNetDefs.h
 	g++ acquire.o PixieNetCommon.o PixieNetConfig.o -rdynamic $(LINKFLAGS) $(LIBS) $(BOOSTLIBS) -o acquire

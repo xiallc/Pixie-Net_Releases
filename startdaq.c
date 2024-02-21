@@ -203,7 +203,7 @@ int main(int argc, char *argv[]) {
       C1[k] = C1[k] * Dgain[k] / scale14B;
    }
 
-   
+
 
     // ********************** Run Start **********************
 
@@ -215,7 +215,8 @@ int main(int argc, char *argv[]) {
    if( (RunType==0x500) || (RunType==0x501)  || (RunType==0x502) || (RunType==0x400) )  {    // list mode runtypes    
       if(SyncT) mapped[ARTC_CLR] = 1;              // write to reset time counter
       mapped[AOUTBLOCK] = OB_RSREG;
-      startTS = mapped[AREALTIME];
+		usleep(15);												// runstats only update very ~10us or so
+      startTS = mapped[AREALTIME+1]; 					// need to accommodate the address offset
       if(RunType==0x500)   {                       // generic runtype is one value per line
          if (argc==2)  fil = fopen(lm_file,"w");
          else          fil = fopen("LMdata.txt","w");

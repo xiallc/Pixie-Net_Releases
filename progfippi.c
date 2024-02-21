@@ -78,14 +78,14 @@ int main(void) {
     return rval;
   }
   const char *settings_file = "settings.ini";
-  rval = init_PixieNetFippiConfig_from_file( settings_file, 1, &fippiconfig );   // second override with user settings, do allow missing
+  rval = init_PixieNetFippiConfig_from_file( settings_file, 2, &fippiconfig );   // second override with user settings, do allow missing, no warning
   if( rval != 0 )
   {
     printf( "Failed to parse FPGA settings from %s, rval=%d\n", settings_file, rval );
     return rval;
   }
 
-  unsigned int  mval, dac, verr;
+  unsigned int  mval, dac, verr, revsn;
   unsigned int CW, FR, SL[NCHANNELS], SG[NCHANNELS], FL[NCHANNELS], FG[NCHANNELS], TH[NCHANNELS];
   unsigned int PSAM, PSEP, TL[NCHANNELS], TD[NCHANNELS], GW[NCHANNELS], GD[NCHANNELS];
   unsigned int QDCL0[NCHANNELS], QDCL1[NCHANNELS], QDCD0[NCHANNELS], QDCD1[NCHANNELS];
@@ -132,6 +132,10 @@ int main(void) {
       mapped[AOUTBLOCK] = OBsave;
       //return(-1);
    }
+
+
+   // ***** get HW info *********
+   revsn = hwinfo(mapped);
 
 
 
@@ -400,7 +404,7 @@ int main(void) {
       addr = N_PL_IN_PAR+k*N_PL_IN_PAR;   // channel registers begin after NPLPAR system registers, NPLPAR each
       mapped[addr+4] = mval;
       if(mapped[addr+4] != mval) printf("Error writing parameters to DAC register\n");
-      usleep(DACWAIT);		// wait for programming
+      usleep(DACWAIT);		      // wait for programming
       mapped[addr+4] = mval;     // repeat, sometimes doesn't take?
       if(mapped[addr+4] != mval) printf("Error writing parameters to DAC register\n");
       usleep(DACWAIT);     
@@ -620,7 +624,10 @@ int main(void) {
       } 
    }
 
-    // ADC AVG: R11
+   // ADC AVG: R11
+   // Note: By design, trigger threshold is max. 4K independent of ADC variant. 
+   //       Pixie-Net with 14bit ADCs must be set up with baseline offset < 4K and TH above that
+
    for( k = 0; k < NCHANNELS; k ++ )
    { 
       if(fippiconfig.ADC_AVG[k] > MAX_AVG_ADC)    {
@@ -751,8 +758,7 @@ int main(void) {
      printf("Zynq temperature: %d C \n",(int)zynq_temperature() );
 
    // ***** check HW info *********
-   k = hwinfo(mapped);
-   printf("HW VERSION %04X, Serial Number %d \n",(k>>16) & 0xFFFF, k & 0xFFFF);
+   printf("HW VERSION %04X, Serial Number %d \n",(revsn>>16) & 0xFFFF, revsn & 0xFFFF);
    if(k==0) printf("WARNING: missing, unknown, or unprogrammed HW \n");
 
    // check compatibility with FW
@@ -763,9 +769,9 @@ int main(void) {
    verr = 1;
 
    // test: FW must be compiled for this HW, upper 4 digits
-   if(  ((k>>16)    & 0xFFFF) == ((mval>>16) & 0xFFFF) )    
+   if(  ((revsn>>16)    & 0xFFFF) == ((mval>>16) & 0xFFFF) )    
       verr=0;    // if exact match: ok
-   if( (((k>>16)    & 0xFFFF) == 0xA981 ) &&
+   if( (((revsn>>16)    & 0xFFFF) == 0xA981 ) &&
        (((mval>>16) & 0xFFFF) == 0xA991 ) )
       verr=0;    // std FW on PTP HW is ok (but not the other way round)      
 
@@ -773,6 +779,7 @@ int main(void) {
 
 
  //  printf("Executed in %s \n",argv[0];
+
  
  // clean up  
  flock( fd, LOCK_UN );

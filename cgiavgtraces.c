@@ -122,42 +122,65 @@ int main(void) {
 
    // **************** XIA code begins **********************
 
-    // 1. arm trigger
+  // 1a. arm trigger
     mapped[AOUTBLOCK] = OB_IOREG;	
     mapped[ACOUNTER_CLR] = 1;	      // any write to COUNTER_CLR arms the trigger for capturing averaged samples
 
-    // 2. poll for capture to be finished
+    // 2a. poll for capture to be finished 
     mapped[AOUTBLOCK] = OB_EVREG;		// switch reads to event data block of addresses
     k=0; 
     do {          
-       usleep(10000);                    
+       usleep(1000);                    
        k=k+1;
        mval = mapped[AADCTRIG];
-     //  printf("ADCTRIG = 0x%x \n", mval);
+       //printf("ADCTRIG = 0x%x \n", mval);
     }  
-    while ( ((mval & 0x00F0) == 0) & (k< maxwait) );      // any of the 4 channels triggered and is done
-    if(k>=maxwait)
+    while ( ((mval & 0x0010) == 0) & (k< maxwait) );      // wait the estimated time, for this channel
+    if( (k>=maxwait)  )                 // not even one trigger found
     {
-       printf("Error: Waiting for trigger timed out \n");
-       return -1;
+       printf("Error: Waiting for trigger timed out, ch. 0 \n");
+      // return -1;
     }
 
-
-
-    // 3. read 4K samples from ADC register 
+    // 3a. read 4K samples from ADC register 
 
    // dummy reads for sampling update
    k = mapped[AAVGADC0] & 0xFFFF;
-   k = mapped[AAVGADC1] & 0xFFFF;
-   k = mapped[AAVGADC2] & 0xFFFF;
-   k = mapped[AAVGADC3] & 0xFFFF;
 
    if( (mval & 0x0010) >0)    // read only traces that triggered  
       for( k = 0; k < NAVG_TRACE_SAMPLES; k ++ )
          adc0[k] = (int)floor((double)mapped[AAVGADC0] / scale[0] );
    else
       for( k = 0; k < NAVG_TRACE_SAMPLES; k ++ )
-         adc0[k] = (k & 0x0003) +0 ;
+         adc0[k] = (k & 0x0003) +0 ;   
+
+
+
+
+    // 1b. arm trigger
+    mapped[AOUTBLOCK] = OB_IOREG;	
+    mapped[ACOUNTER_CLR] = 1;	      // any write to COUNTER_CLR arms the trigger for capturing averaged samples       
+         
+    // 2b. poll for capture to be finished 
+    mapped[AOUTBLOCK] = OB_EVREG;		// switch reads to event data block of addresses
+    k=0; 
+    do {          
+       usleep(1000);                    
+       k=k+1;
+       mval = mapped[AADCTRIG];
+       //printf("ADCTRIG = 0x%x \n", mval);
+    }  
+    while ( ((mval & 0x0020) == 0) & (k< maxwait) );      // wait the estimated time, for this channel
+    if( (k>=maxwait)  )                 // not even one trigger found
+    {
+       //printf("Error: Waiting for trigger timed out, ch. 1 \n");
+      // return -1;
+    }
+
+    // 3b. read 4K samples from ADC register 
+
+   // dummy reads for sampling update
+   k = mapped[AAVGADC1] & 0xFFFF;
 
    if( (mval & 0x0020) >0)    // read only traces that triggered  
       for( k = 0; k < NAVG_TRACE_SAMPLES; k ++ )
@@ -166,12 +189,67 @@ int main(void) {
       for( k = 0; k < NAVG_TRACE_SAMPLES; k ++ )
          adc1[k] = (k & 0x0003) +1 ;
 
+
+
+   // 1c. arm trigger
+    mapped[AOUTBLOCK] = OB_IOREG;	
+    mapped[ACOUNTER_CLR] = 1;	      // any write to COUNTER_CLR arms the trigger for capturing averaged samples
+
+    // 2c. poll for capture to be finished 
+    mapped[AOUTBLOCK] = OB_EVREG;		// switch reads to event data block of addresses
+    k=0; 
+    do {          
+       usleep(1000);                    
+       k=k+1;
+       mval = mapped[AADCTRIG];
+       //printf("ADCTRIG = 0x%x \n", mval);
+    }  
+    while ( ((mval & 0x0040) == 0) & (k< maxwait) );      // wait the estimated time, for this channel
+    if( (k>=maxwait)  )                 // not even one trigger found
+    {
+      // printf("Error: Waiting for trigger timed out, ch. 2 \n");
+      // return -1;
+    }
+
+    // 3c. read 4K samples from ADC register 
+
+   // dummy reads for sampling update
+   k = mapped[AAVGADC2] & 0xFFFF;
+
    if( (mval & 0x0040) >0)    // read only traces that triggered  
       for( k = 0; k < NAVG_TRACE_SAMPLES; k ++ )
          adc2[k] = (int)floor((double)mapped[AAVGADC2] / scale[2] );
    else
       for( k = 0; k < NAVG_TRACE_SAMPLES; k ++ )
          adc2[k] = (k & 0x0003) +2 ;
+
+
+
+   // 1d. arm trigger
+    mapped[AOUTBLOCK] = OB_IOREG;	
+    mapped[ACOUNTER_CLR] = 1;	      // any write to COUNTER_CLR arms the trigger for capturing averaged samples
+
+
+    // 2d. poll for capture to be finished 
+    mapped[AOUTBLOCK] = OB_EVREG;		// switch reads to event data block of addresses
+    k=0; 
+    do {          
+       usleep(1000);                    
+       k=k+1;
+       mval = mapped[AADCTRIG];
+       //printf("ADCTRIG = 0x%x \n", mval);
+    }  
+    while ( ((mval & 0x0080) == 0) & (k< maxwait) );      // wait the estimated time, for this channel
+    if( (k>=maxwait)  )                 // not even one trigger found
+    {
+      // printf("Error: Waiting for trigger timed out, ch. 3 \n");
+      // return -1;
+    }
+
+    // 3d. read 4K samples from ADC register 
+
+   // dummy reads for sampling update
+   k = mapped[AAVGADC3] & 0xFFFF;
 
    if( (mval & 0x0080) >0)    // read only traces that triggered  
       for( k = 0; k < NAVG_TRACE_SAMPLES; k ++ )
