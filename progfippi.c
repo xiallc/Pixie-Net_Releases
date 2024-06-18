@@ -307,17 +307,20 @@ int main(void) {
       SL[k] = (int)floorf(fippiconfig.ENERGY_RISETIME[k] * FILTER_CLOCK_MHZ);
       SL[k] = SL[k] >> FR;
       if(SL[k] <MIN_SL) {
-         printf("Invalid ENERGY_RISETIME = %f, minimum %f us at this filter range\n",fippiconfig.ENERGY_RISETIME[k],(double)((MIN_SL<<FR)/FILTER_CLOCK_MHZ));
+         printf("Invalid ENERGY_RISETIME = %f, minimum %f us at this filter range\n",fippiconfig.ENERGY_RISETIME[k],(double)(MIN_SL<<FR)/(double)FILTER_CLOCK_MHZ);
          return -3600-k;
       } 
       SG[k] = (int)floorf(fippiconfig.ENERGY_FLATTOP[k] * FILTER_CLOCK_MHZ);
+      //printf("ENERGY_FLATTOP = %f,rounded to %d\n",fippiconfig.ENERGY_FLATTOP[k],SG[k]);
+
       SG[k] = SG[k] >> FR;
+      //printf("ENERGY_FLATTOP = %f,rounded and adjusted to decimation to %d\n",fippiconfig.ENERGY_FLATTOP[k],SG[k]);
       if(SG[k] <MIN_SG) {
-         printf("Invalid ENERGY_FLATTOP = %f, minimum %f us at this filter range\n",fippiconfig.ENERGY_FLATTOP[k],(double)((MIN_SG<<FR)/FILTER_CLOCK_MHZ));
+         printf("Invalid ENERGY_FLATTOP = %f, minimum %f us at this filter range\n",fippiconfig.ENERGY_FLATTOP[k],(double)(MIN_SG<<FR)/(double)FILTER_CLOCK_MHZ);
          return -3700-k;
       } 
       if( (SL[k]+SG[k]) >MAX_SLSG) {
-         printf("Invalid combined energy filter, maximum %f us at this filter range\n",(double)((MAX_SLSG<<FR)/FILTER_CLOCK_MHZ));
+         printf("Invalid combined energy filter, maximum %f us at this filter range\n",(double)(MAX_SLSG<<FR)/(double)FILTER_CLOCK_MHZ);
          return -3700-k;
       } 
       mval = SL[k]-1;
@@ -334,16 +337,16 @@ int main(void) {
     {
       FL[k] = (int)floorf(fippiconfig.TRIGGER_RISETIME[k] * FILTER_CLOCK_MHZ);
       if(FL[k] <MIN_FL) {
-         printf("Invalid TRIGGER_RISETIME = %f, minimum %f us\n",fippiconfig.TRIGGER_RISETIME[k],(double)(MIN_FL/FILTER_CLOCK_MHZ));
+         printf("Invalid TRIGGER_RISETIME = %f, minimum %f us\n",fippiconfig.TRIGGER_RISETIME[k],(double)MIN_FL/(double)FILTER_CLOCK_MHZ);
          return -3800-k;
       } 
       FG[k] = (int)floorf(fippiconfig.TRIGGER_FLATTOP[k] * FILTER_CLOCK_MHZ);
       if(FG[k] <MIN_FL) {
-         printf("Invalid TRIGGER_FLATTOP = %f, minimum %f us\n",fippiconfig.TRIGGER_FLATTOP[k],(double)(MIN_FG/FILTER_CLOCK_MHZ));
+         printf("Invalid TRIGGER_FLATTOP = %f, minimum %f us\n",fippiconfig.TRIGGER_FLATTOP[k],(double)MIN_FG/(double)FILTER_CLOCK_MHZ);
          return -3900-k;
       } 
       if( (FL[k]+FG[k]) >MAX_FLFG) {
-         printf("Invalid combined trigger filter, maximum %f us\n",(double)(MAX_FLFG/FILTER_CLOCK_MHZ));
+         printf("Invalid combined trigger filter, maximum %f us\n",(double)MAX_FLFG/(double)FILTER_CLOCK_MHZ);
          return -3900-k;
       } 
       TH[k] = (int)floor(fippiconfig.TRIGGER_THRESHOLD[k]*FL[k]/2.0);

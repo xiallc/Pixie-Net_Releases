@@ -25,6 +25,7 @@ software version 2.24.
 | Standard | 12 | 0xA991_0232 | sd-bootfiles-pn-STD-2p32.zip | 
 | Standard | 14 | 0xA9A1_0232 | sd-bootfiles-pn-14B-2p32.zip | 
 | PSA | 12 | 0xA991_1231 | sd-bootfiles-pn-PSA-2p31.zip | 
+| PSA | 14 | 0xA991_1233 | sd-bootfiles-pn-14B-PSA-2p33.zip | 
 
 
 ## File Name Conventions

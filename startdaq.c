@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
     return rval;
   }
   const char *settings_file = "settings.ini";
-  rval = init_PixieNetFippiConfig_from_file( settings_file, 1, &fippiconfig );   // second override with user settings, do allow missing
+  rval = init_PixieNetFippiConfig_from_file( settings_file, 2, &fippiconfig );   // second override with user settings, do allow missing, no warning
   if( rval != 0 )
   {
     printf( "Failed to parse FPGA settings from %s, rval=%d\n", settings_file, rval );
@@ -373,6 +373,8 @@ int main(int argc, char *argv[]) {
                      psa_Q1 = 0;
                   
                   psa_ampl = ((psa1 & 0xFFFF0000) >> 16) - psa_base;
+
+                  //if(eventcount<10) printf("psa0 0x%x, psa1 0x%x\n",psa0,psa1);
 
                   if(psa_Q0!=0)
                      psa_R = (int)floor(1000.0*(double)psa_Q1/(double)psa_Q0);
